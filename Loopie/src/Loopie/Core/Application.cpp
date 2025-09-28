@@ -97,6 +97,11 @@ namespace Loopie {
 					module->OnUpdate();
 				}
 			}
+			for (Module* module : m_modules) {
+				if (module->IsActive()) {
+					module->OnInterfaceRender();
+				}
+			}
 
 			ImGui::ShowDemoWindow();
 			m_imguiManager.EndFrame();

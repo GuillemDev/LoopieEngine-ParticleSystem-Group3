@@ -1,4 +1,5 @@
 #include "Loopie/Core/Application.h"
+#include "CreateProjectModule.h"
 
 namespace Loopie {
 	class EditorApplication : public Application {
@@ -7,7 +8,7 @@ namespace Loopie {
 			//// Open first the module -> Project CreationSetUp
 			//// Once the Porject is selected, remove the module and add the EditorModule
 
-			/// AddModule();
+			AddModule(new CreateProjectModule());
 		}
 	};
 }
