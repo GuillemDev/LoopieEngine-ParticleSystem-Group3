@@ -1,9 +1,11 @@
 #include "CreateProjectModule.h"
 
-#include "EngineEditorModule.h"
+#include "EditorModule.h"
 
 #include "Loopie/Core/Application.h"
 #include "Loopie/Project/Project.h"
+
+#include <imgui.h>
 
 
 namespace Loopie
@@ -13,7 +15,7 @@ namespace Loopie
 		Application& app = Application::GetInstance();
 		if (!app.m_activeProject.IsEmpty())
 		{
-			app.AddModule(new EngineEditorModule());
+			app.AddModule(new EditorModule());
 			app.RemoveModule(this);
 		}
 	}
@@ -27,6 +29,7 @@ namespace Loopie
 	}
 	void CreateProjectModule::OnInterfaceRender()
 	{
+		ImGui::DockSpaceOverViewport();
 		m_interface->Render();
 	}
 }

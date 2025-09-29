@@ -13,7 +13,6 @@ namespace Loopie
 
 	}
 
-
 	void ProjectSetupInterface::Render()
 	{
 		ImGui::Begin("Create Project", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
