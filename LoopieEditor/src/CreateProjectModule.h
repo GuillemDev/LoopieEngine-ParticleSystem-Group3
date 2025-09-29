@@ -6,9 +6,10 @@
 namespace Loopie {
 	class CreateProjectModule : public Module{
 	public:
-		CreateProjectModule();
+		CreateProjectModule() = default;
 		~CreateProjectModule() = default;
 
+		void OnUpdate() override;
 		void OnLoad()override;
 		void OnUnload()override;
 		void OnInterfaceRender()override;

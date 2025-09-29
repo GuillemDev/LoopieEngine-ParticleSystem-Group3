@@ -69,6 +69,7 @@ namespace Loopie {
 		}	
 		module->OnUnload();
 		m_modules.erase(it);
+		delete module;
 	}
 
 	Application& Application::GetInstance()

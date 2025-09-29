@@ -1,20 +1,31 @@
 #include "CreateProjectModule.h"
 
+#include "EngineEditorModule.h"
+
+#include "Loopie/Core/Application.h"
+#include "Loopie/Project/Project.h"
+
+
 namespace Loopie
 {
-	CreateProjectModule::CreateProjectModule()
+	void CreateProjectModule::OnUpdate()
 	{
-
+		Application& app = Application::GetInstance();
+		if (!app.m_activeProject.IsEmpty())
+		{
+			app.AddModule(new EngineEditorModule());
+			app.RemoveModule(this);
+		}
 	}
 	void CreateProjectModule::OnLoad()
 	{
 		m_interface = new ProjectSetupInterface();
 	}
-	void Loopie::CreateProjectModule::OnUnload()
+	void CreateProjectModule::OnUnload()
 	{
 		delete m_interface;
 	}
-	void Loopie::CreateProjectModule::OnInterfaceRender()
+	void CreateProjectModule::OnInterfaceRender()
 	{
 		m_interface->Render();
 	}
