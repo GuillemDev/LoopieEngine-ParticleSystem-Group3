@@ -2,6 +2,8 @@
 
 #include "src/Interfaces/Interface.h"
 
+#include <string>
+
 namespace Loopie {
 	class EditorMenuInterface : public Interface {
 	public:
@@ -12,5 +14,9 @@ namespace Loopie {
 	private:
 		void RenderOpenProjectPopUp();
 		void RenderCreateProjectPopUp();
+
+	private:
+		char m_projectName[128] = "";
+		std::string m_projectPath = "";
 	};
 }

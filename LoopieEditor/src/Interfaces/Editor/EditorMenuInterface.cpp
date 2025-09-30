@@ -22,11 +22,14 @@ namespace Loopie {
 				if (ImGui::MenuItem("Open"))
 				{
 					ImGui::OpenPopup(openProjectPopUpId);
+					m_projectPath = "";
 				}
 
 				if (ImGui::MenuItem("New"))
 				{
 					ImGui::OpenPopup(createProjectPopUpId);
+					m_projectPath = "";
+					m_projectName[0] = '\0';
 				}
 
 				if (ImGui::MenuItem("Exit"))
@@ -52,21 +55,20 @@ namespace Loopie {
 	{
 		if (ImGui::BeginPopupModal("Open Project###OpenProjectPopUp", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize)) {
 			///Render interface
-			static std::string projectPath;
-			ImGui::InputText("Path", projectPath.data(), projectPath.capacity(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("Path", m_projectPath.data(), m_projectPath.capacity(), ImGuiInputTextFlags_ReadOnly);
 			ImGui::SameLine();
 			if (ImGui::Button("##", { 20,20 }))
 			{
 				DialogResult result = FileDialog::SelectFolder();
 				if (result.Status == DialogResultType::SUCCESS)
 				{
-					projectPath = result.Paths[0].string();
+					m_projectPath = result.Paths[0].string();
 				}
 			}
 
 			if (ImGui::Button("Open Project", { 150,20 }))
 			{
-				if (Application::GetInstance().m_activeProject.Open(projectPath)) {
+				if (Application::GetInstance().m_activeProject.Open(m_projectPath)) {
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -82,25 +84,22 @@ namespace Loopie {
 		if (ImGui::BeginPopupModal("Create Project###CreateProjectPopUp", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize)) {
 			///Render interface
 
-			static char projectName[128];
-			static std::string projectPath;
+			ImGui::InputText("Project Name", m_projectName, IM_ARRAYSIZE(m_projectName));
 
-			ImGui::InputText("Project Name", projectName, IM_ARRAYSIZE(projectName));
-
-			ImGui::InputText("Path", projectPath.data(), projectPath.capacity(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("Path", m_projectPath.data(), m_projectPath.capacity(), ImGuiInputTextFlags_ReadOnly);
 			ImGui::SameLine();
 			if (ImGui::Button("##", { 20,20 }))
 			{
 				DialogResult result = FileDialog::SelectFolder();
 				if (result.Status == DialogResultType::SUCCESS)
 				{
-					projectPath = result.Paths[0].string();
+					m_projectPath = result.Paths[0].string();
 				}
 			}
 
 			if (ImGui::Button("Create Project", { 150,20 }))
 			{
-				if (Application::GetInstance().m_activeProject.Create(projectPath, projectName)) {
+				if (Application::GetInstance().m_activeProject.Create(m_projectPath, m_projectName)) {
 					ImGui::CloseCurrentPopup();
 				}
 			}
