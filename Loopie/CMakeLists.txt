@@ -14,6 +14,7 @@ find_package(glm REQUIRED)
 find_package(SDL3 REQUIRED)
 find_package(nfd REQUIRED)
 find_package(nlohmann_json REQUIRED)
+find_package(assimp REQUIRED)
 find_package(imgui REQUIRED)
 
 
@@ -30,6 +31,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	SDL3::SDL3
 	nfd::nfd
 	nlohmann_json::nlohmann_json
+	assimp::assimp
 	imgui::imgui
 )
 
