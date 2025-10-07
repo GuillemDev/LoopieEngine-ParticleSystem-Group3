@@ -72,7 +72,7 @@ namespace Loopie {
 		bool CheckIfShaderIsBoundAndWarn();
 
 	private:
-		GLuint m_id;
+		GLuint m_rendererID = 0;
 		std::unordered_map<std::string, GLint> m_uniformLocationCache;
 		mutable std::vector<std::string> m_activeUniformsCache;
 		mutable std::vector<std::string> m_activeAttributesCache;

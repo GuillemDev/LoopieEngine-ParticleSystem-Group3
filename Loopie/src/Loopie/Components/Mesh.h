@@ -18,6 +18,8 @@ namespace Loopie {
 	class Mesh {
 	public :
 		Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
+		~Mesh() = default;
+
 		void Render();
 
 		Shader& GetShader() { return m_shader; }
@@ -29,6 +31,6 @@ namespace Loopie {
 		VertexBuffer m_vbo;
 		IndexBuffer m_ebo;
 
-		Shader m_shader = Shader("assets/CorrectShader.shader");
+		Shader m_shader = Shader("assets/shaders/CorrectShader.shader");
 	};
 }

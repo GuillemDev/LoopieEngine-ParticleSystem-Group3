@@ -8,13 +8,17 @@
 #define WINDOW_DEFAULT_WIDTH 800
 #define WINDOW_DEFAULT_HEIGHT 600
 
+
 namespace Loopie {
+	class InputEventManager;
+
 	class Window {
 	public:
 		Window();
 		~Window();
 
 		void StartFrame();
+		void ProcessEvents(InputEventManager& eventController);
 		void Update();
 
 		ivec2 GetSize() const;
@@ -31,6 +35,7 @@ namespace Loopie {
 		void SetTitle(const char* title);/// Maybe Do a getter also?
 		void SetPosition(int x, int y);
 		float GetDeltaTimeMs();
+		float GetDeltaTime();
 		// missing borderless, vsync, multi-monitor?
 
 		SDL_Window* GetSDLWindow() const { return m_window; }

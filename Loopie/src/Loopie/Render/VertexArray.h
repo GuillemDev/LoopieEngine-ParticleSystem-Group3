@@ -8,7 +8,7 @@ namespace Loopie
     class VertexArray
     {
     private:
-        unsigned int m_RendererID;
+        unsigned int m_rendererID;
         VertexBuffer* m_vbo = nullptr;
         IndexBuffer* m_ebo = nullptr;
 

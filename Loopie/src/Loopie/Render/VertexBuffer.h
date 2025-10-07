@@ -18,7 +18,7 @@ namespace Loopie
 		void SetLayout(const BufferLayout& layout) { m_layout = layout; }
 
 	private:
-		unsigned int m_vboID;
+		unsigned int m_rendererID = 0;
 		BufferLayout m_layout;
 	};
 }

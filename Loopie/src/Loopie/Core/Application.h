@@ -28,7 +28,7 @@ namespace Loopie {
 		bool IsInterfaceVisible() const{ return m_renderInterface; }
 
 	private:
-		void ProcessEvents();
+		void ProcessEvents(InputEventManager& eventController);
 
 	public:
 		Project m_activeProject;

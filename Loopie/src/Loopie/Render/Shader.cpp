@@ -42,16 +42,16 @@ namespace Loopie {
 			return;
 		}
 
-		m_id = glCreateProgram();
-		glAttachShader(m_id, vertexShader);
-		glAttachShader(m_id, fragmentShader);
-		glLinkProgram(m_id);
+		m_rendererID = glCreateProgram();
+		glAttachShader(m_rendererID, vertexShader);
+		glAttachShader(m_rendererID, fragmentShader);
+		glLinkProgram(m_rendererID);
 
-		if (!CheckCompileErrors(m_id, "PROGRAM"))
+		if (!CheckCompileErrors(m_rendererID, "PROGRAM"))
 		{
 			Loopie::Log::Critical("Shader linking failed. Deleting shader.");
-			glDeleteProgram(m_id);
-			m_id = 0;
+			glDeleteProgram(m_rendererID);
+			m_rendererID = 0;
 		}
 
 		glDeleteShader(vertexShader);
@@ -60,12 +60,12 @@ namespace Loopie {
 
 	Shader::~Shader()
 	{
-		glDeleteProgram(m_id);
+		glDeleteProgram(m_rendererID);
 	}
 
 	void Shader::Bind() const
 	{
-		glUseProgram(m_id);
+		glUseProgram(m_rendererID);
 	}
 
 	void Shader::Unbind() const
@@ -122,8 +122,8 @@ namespace Loopie {
 		}
 
 		// Delete old program and swap them
-		glDeleteProgram(m_id);
-		m_id = newProgram;
+		glDeleteProgram(m_rendererID);
+		m_rendererID = newProgram;
 
 		// Clear cache since uniform locations may have changed
 		m_uniformLocationCache.clear();
@@ -233,7 +233,7 @@ namespace Loopie {
 
 	GLuint Shader::GetProgramID() const
 	{
-		return m_id;
+		return m_rendererID;
 	}
 
 	GLint Shader::GetUniformLocation(const std::string& name)
@@ -243,7 +243,7 @@ namespace Loopie {
 			return m_uniformLocationCache[name];
 		}
 
-		GLint location = glGetUniformLocation(m_id, name.c_str());
+		GLint location = glGetUniformLocation(m_rendererID, name.c_str());
 		m_uniformLocationCache[name] = location;
 		return location;
 	}
@@ -272,7 +272,7 @@ namespace Loopie {
 	{
 		GLint currentProgram;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-		return currentProgram == static_cast<GLint>(m_id);
+		return currentProgram == static_cast<GLint>(m_rendererID);
 	}
 
 	const std::vector<std::string>& Shader::GetActiveUniforms() const
@@ -283,7 +283,7 @@ namespace Loopie {
 		m_activeUniformsCache.clear();
 
 		GLint count;
-		glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &count);
+		glGetProgramiv(m_rendererID, GL_ACTIVE_UNIFORMS, &count);
 
 		for (GLint i = 0; i < count; i++)
 		{
@@ -292,7 +292,7 @@ namespace Loopie {
 			GLint size;
 			GLenum type;
 
-			glGetActiveUniform(m_id, i, sizeof(name), &length, &size, &type, name);
+			glGetActiveUniform(m_rendererID, i, sizeof(name), &length, &size, &type, name);
 			m_activeUniformsCache.push_back(std::string(name));
 		}
 
@@ -308,7 +308,7 @@ namespace Loopie {
 		m_activeAttributesCache.clear();
 
 		GLint count;
-		glGetProgramiv(m_id, GL_ACTIVE_ATTRIBUTES, &count);
+		glGetProgramiv(m_rendererID, GL_ACTIVE_ATTRIBUTES, &count);
 
 		for (GLint i = 0; i < count; i++)
 		{
@@ -317,7 +317,7 @@ namespace Loopie {
 			GLint size;
 			GLenum type;
 
-			glGetActiveAttrib(m_id, i, sizeof(name), &length, &size, &type, name);
+			glGetActiveAttrib(m_rendererID, i, sizeof(name), &length, &size, &type, name);
 			m_activeAttributesCache.push_back(std::string(name));
 		}
 

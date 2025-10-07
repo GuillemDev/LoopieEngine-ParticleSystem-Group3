@@ -5,12 +5,11 @@ namespace Loopie
     class IndexBuffer
     {
     private:
-        unsigned int m_RendererID;
-        unsigned int m_Count;
+        unsigned int m_rendererID = 0;
+        unsigned int m_count = 0;
 
     public:
         IndexBuffer(const unsigned int* data, unsigned int count);
-
         ~IndexBuffer();
 
         void Bind() const;

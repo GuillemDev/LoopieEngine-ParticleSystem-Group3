@@ -22,17 +22,17 @@ namespace Loopie
 
     VertexArray::VertexArray()
     {
-        glGenVertexArrays(1, &m_RendererID);
+        glGenVertexArrays(1, &m_rendererID);
     }
 
     VertexArray::~VertexArray()
     {
-        glDeleteVertexArrays(1, &m_RendererID);
+        glDeleteVertexArrays(1, &m_rendererID);
     }
 
     void VertexArray::Bind() const
     {
-        glBindVertexArray(m_RendererID);
+        glBindVertexArray(m_rendererID);
     }
 
     void VertexArray::Unbind() const

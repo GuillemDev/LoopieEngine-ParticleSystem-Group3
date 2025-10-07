@@ -3,6 +3,7 @@
 #include "Loopie/Core/Assert.h"
 #include "Loopie/Core/Log.h"
 #include "Loopie/Render/Renderer.h"
+#include "Loopie/Core/InputEventManager.h"
 
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_timer.h>
@@ -62,6 +63,13 @@ namespace Loopie {
 	{
 		SDL_GL_SwapWindow(m_window);
 		LimitFramerate();
+	}
+
+	void Window::ProcessEvents(InputEventManager& eventController) {
+		if (eventController.HasEvent(SDL_EVENT_WINDOW_RESIZED)) {
+			ivec2 windowSize = GetSize();
+			Renderer::SetViewport(0, 0, windowSize.x, windowSize.y);
+		}
 	}
 
 	ivec2 Window::GetSize() const /// Change To vector when posible (glm)
@@ -163,6 +171,10 @@ namespace Loopie {
 	float Window::GetDeltaTimeMs()
 	{
 		return m_deltaTimeMs;
+	}
+	float Window::GetDeltaTime()
+	{
+		return m_deltaTimeMs/1000.0f;
 	}
 	void Window::LimitFramerate()
 	{
