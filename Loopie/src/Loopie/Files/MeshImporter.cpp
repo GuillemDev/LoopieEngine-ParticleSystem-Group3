@@ -43,6 +43,7 @@ namespace Loopie {
 		std::vector<unsigned int> indices;
 		VertexComponents components;
 
+		components.Position = mesh->mNumVertices > 0;
 		components.Normal = mesh->HasNormals();
 		components.TexCoord = mesh->mTextureCoords[0];
 		components.Tangent = mesh->HasTangentsAndBitangents();
