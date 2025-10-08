@@ -30,7 +30,12 @@ namespace Loopie {
         bool IsObject() const { return IsValid() && m_node->is_object(); }
         bool IsArray() const { return IsValid() && m_node->is_array(); }
         bool IsEmpty() const { return Size() == 0; }
+
+        unsigned int Size(const std::string& keyPath);
         unsigned int Size() const { return IsValid() ? (unsigned int)m_node->size() : 0; }
+
+        bool IsArrayEmpty(const std::string& keyPath) const;
+        bool IsArrayEmpty() const { return  Size() == 0 ? true : false; }
 
         
 
@@ -85,6 +90,13 @@ namespace Loopie {
             }
             return false;
         }
+
+        std::vector<std::string> GetObjectKeys(const std::string& keyPath) const;
+        std::vector<std::string> GetObjectKeys() const;
+
+        bool HasKey(const std::string& keyPath, const std::string& key) const;
+        bool HasKey(const std::string& key) const;
+
 
         JsonNode CreateObjectField(const std::string& keyPath);
         JsonNode CreateArrayField(const std::string& keyPath);
@@ -211,6 +223,10 @@ namespace Loopie {
 
         bool IsEmpty() const { return m_empty; }
 
+        unsigned int Size() {
+            return Root().Size();
+        }
+
         template <typename T>
         JsonResult<T> GetValue(const std::string& keyPath, T defaultValue = {}) {
             return Root().GetValue(keyPath, defaultValue);
@@ -219,6 +235,14 @@ namespace Loopie {
         template <typename T>
         bool SetValue(const std::string& keyPath, T value) {
             return Root().SetValue(keyPath, value);
+        }
+
+        std::vector<std::string> GetObjectKeys(const std::string& keyPath) {
+            return Root().GetObjectKeys(keyPath);
+        }
+
+        bool HasKey(const std::string& keyPath, const std::string& key) {
+            return Root().HasKey(keyPath, key);
         }
 
         template <typename T>

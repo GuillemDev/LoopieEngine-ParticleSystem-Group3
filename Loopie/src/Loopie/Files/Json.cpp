@@ -54,6 +54,23 @@ namespace Loopie {
         m_parentNode = nullptr;
     }
 
+    unsigned int JsonNode::Size(const std::string& keyPath)
+    {
+        if (keyPath.empty())
+            return Size();
+        JsonNode node = Child(keyPath);
+        return node.Size();
+
+    }
+
+    bool JsonNode::IsArrayEmpty(const std::string& keyPath) const
+    {
+        if (keyPath.empty())
+            return IsArrayEmpty();
+        JsonNode node = Child(keyPath);
+        return node.IsArrayEmpty();
+    }
+
     JsonNode JsonNode::Child(const std::string& keyPath) const
     {
         if (!IsValid())
@@ -122,6 +139,40 @@ namespace Loopie {
 
         m_parentNode->erase(name);
         return true;
+    }
+
+    std::vector<std::string> JsonNode::GetObjectKeys(const std::string& keyPath) const
+    {
+        if (keyPath.empty())
+            return GetObjectKeys();
+
+        JsonNode node = Child(keyPath);
+        return node.GetObjectKeys();
+    }
+
+    std::vector<std::string> JsonNode::GetObjectKeys() const
+    {
+        std::vector<std::string> keys;
+        if (IsValid() && IsObject()) {
+            for (auto& [key, value] : m_node->items()) {
+                keys.push_back(key);
+            }
+        }
+        return keys;
+    }
+
+    bool JsonNode::HasKey(const std::string& keyPath, const std::string& key) const
+    {
+        if (keyPath.empty())
+            return HasKey(key);
+
+        JsonNode node = Child(keyPath);
+        return node.HasKey(key);
+    }
+
+    bool JsonNode::HasKey(const std::string& key) const
+    {
+        return IsValid() && IsObject() && m_node->contains(key);
     }
 
     JsonNode JsonNode::CreateObjectField(const std::string& keyPath) {
