@@ -25,17 +25,18 @@ namespace Loopie {
 
 	bool MeshImporter::CheckIfIsModel(const char* path) const
 	{
+		Assimp::Importer importer;
 		std::string extension = std::filesystem::path(path).extension().string();
 
-		bool isModel =	extension == ".fbx" ||
-						extension == ".obj" ||
-						extension == ".3ds" ||
-						extension == ".dae" ||
-						extension == ".gltf" ||
-						extension == ".glb" ||
-						extension == ".blend" ||
-						extension == ".stl";
+		for (char& c : extension)
+		{
+			c = std::tolower(static_cast<unsigned char>(c));
+		}
 
+		if (!extension.empty() && extension[0] == '.')
+			extension = extension.substr(1);
+
+		bool isModel = importer.IsExtensionSupported(extension);
 		if (isModel) LoadModel(path);
 
 		return isModel;

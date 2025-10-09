@@ -75,7 +75,6 @@ namespace Loopie {
 		float m_axisDeadZone = 0.15f;
 
 		std::vector<const char*> m_droppedFiles;
-		bool m_hasFileBeenDropped = false;
 
 		SDL_Gamepad* gamepad = nullptr;
 	};
