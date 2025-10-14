@@ -31,7 +31,7 @@ namespace Loopie
 	private:
 		void CalculateMatrices() const;
 	private:
-		vec4 m_viewport = vec4(0,0,0,0);
+		vec4 m_viewport = vec4(0,0,1,1);
 
 		float m_fov=45.0f;
 		float m_nearPlane = 0.1f;
