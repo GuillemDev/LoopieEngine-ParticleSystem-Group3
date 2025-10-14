@@ -31,15 +31,15 @@ namespace Loopie
 	private:
 		void CalculateMatrices() const;
 	private:
-		vec4 m_viewport;
+		vec4 m_viewport = vec4(0,0,0,0);
 
-		float m_fov;
-		float m_nearPlane;
-		float m_farPlane;
+		float m_fov=45.0f;
+		float m_nearPlane = 0.1f;
+		float m_farPlane=200.0f;
 
-		mutable matrix4 m_viewMatrix;
-		mutable matrix4 m_projectionMatrix;
-		mutable matrix4 m_viewProjectionMatrix;
+		mutable matrix4 m_viewMatrix = matrix4(1);
+		mutable matrix4 m_projectionMatrix = matrix4(1);
+		mutable matrix4 m_viewProjectionMatrix = matrix4(1);
 
 		mutable bool m_dirty = true;
 	};

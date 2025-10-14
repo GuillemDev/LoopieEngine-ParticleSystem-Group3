@@ -61,12 +61,12 @@ namespace Loopie {
 		m_vertices.clear();
 		m_vertices = std::vector<float>(data.verticesAmount* data.vertexElements);
 
-		for (uint32_t i = 0; i < data.verticesAmount * data.vertexElements; ++i) {
+		for (unsigned int i = 0; i < data.verticesAmount * data.vertexElements; ++i) {
 			file.read(reinterpret_cast<char*>(&m_vertices[i]), sizeof m_vertices[i]);
 		}
 		m_indices.clear();
 		m_indices = std::vector<unsigned int>(data.indicesAmount);
-		for (uint32_t i = 0; i < data.indicesAmount; ++i) {
+		for (unsigned int i = 0; i < data.indicesAmount; ++i) {
 			file.read(reinterpret_cast<char*>(&m_indices[i]), sizeof m_indices[i]);
 		}
 		file.close();
@@ -74,7 +74,7 @@ namespace Loopie {
 
 		m_components = data.components;
 
-		m_vbo = std::make_shared<VertexBuffer>(m_vertices.data(), sizeof(float) * data.verticesAmount * data.vertexElements);
+		m_vbo = std::make_shared<VertexBuffer>(m_vertices.data(), (unsigned int)(sizeof(float) * data.verticesAmount * data.vertexElements));
 		m_ebo = std::make_shared<IndexBuffer>(m_indices.data(), data.indicesAmount);
 		m_vao = std::make_shared<VertexArray>();
 
