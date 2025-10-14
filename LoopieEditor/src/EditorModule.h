@@ -40,11 +40,10 @@ namespace Loopie {
 
 
 		/// Test
-		Transform cameraT;
-		std::shared_ptr<Camera> camera; /// Create an especific CameraController / EditorCamera / OrbitalCamera Class????
-
-		Transform meshT;
-		std::vector<MeshRenderer*> meshRenderers; /// Move To Entities when done
+		Scene* scene;
+		std::shared_ptr<Entity> cameraEntity;
+		std::shared_ptr<Camera> camera;
+		std::shared_ptr<Entity> meshContainerEntity;
 
 		const float SPEED = 100.0f;
 		float rotation = 0;

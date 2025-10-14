@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Loopie/Core/Math.h"
+#include "Loopie/Components/Component.h"
 #include <functional>
 
 namespace Loopie
 {
-    class Transform
+    class Transform : public Component
     {
     public:
         
@@ -59,9 +60,10 @@ namespace Loopie
 
         void SetDirty() const;
 
+        void Init() override; //// From Component
+
     private:
         void RecalculateCache() const;
-   
     public:
         std::function<void()>OnTransformDirty;
     private:

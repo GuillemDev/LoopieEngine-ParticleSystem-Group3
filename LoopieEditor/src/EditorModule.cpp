@@ -22,11 +22,21 @@ namespace Loopie
 		AssetRegistry::Initialize();
 		Application::GetInstance().GetWindow().SetResizable(true);
 
+		/////SCENE
+		Application::GetInstance().CreateScene(""); /// Maybe default One
+		scene = &Application::GetInstance().GetScene();
 
+		cameraEntity = scene->CreateEntity("Camera");
+		camera = cameraEntity->AddComponent<Camera>();
+		camera->GetTransform()->SetPosition({ 0,0,-50.f });
 
-		cameraT.SetPosition({ 0,0,-50.f });
-		camera = std::make_shared<Camera>(cameraT);
+		meshContainerEntity = scene->CreateEntity("ModelContainer");
 
+		std::shared_ptr<MeshRenderer> meshData = cameraEntity->GetComponent<MeshRenderer>();
+		if (meshData == nullptr)
+			Log::Info("Oh nooooo");
+		////
+	
 		ivec2 windowSize = Application::GetInstance().GetWindow().GetSize();
 		camera->SetViewport(0, 0, windowSize.x, windowSize.y);
 	}
@@ -34,11 +44,6 @@ namespace Loopie
 	void EditorModule::OnUnload()
 	{
 		AssetRegistry::Shutdown();
-		for (size_t i = 0; i < meshRenderers.size(); i++)
-		{
-			delete meshRenderers[i];
-		}
-		meshRenderers.clear();
 	}
 
 	void EditorModule::OnUpdate(float dt)
@@ -73,8 +78,12 @@ namespace Loopie
 						AssetRegistry::RegisterAsset(metadata);
 
 						std::shared_ptr<Mesh> mesh = ResourceDatabase::LoadResource<Mesh>(metadata.uuid);
-						if (mesh)
-							meshRenderers.push_back(new MeshRenderer(mesh));
+						if (mesh) {
+							std::shared_ptr<Entity> newEntity = scene->CreateEntity("ModelEntity");
+							newEntity->SetParent(meshContainerEntity);
+							std::shared_ptr<MeshRenderer> renderer = newEntity->AddComponent<MeshRenderer>();
+							renderer->SetMesh(mesh);
+						}
 					}
 				}
 				else {
@@ -83,9 +92,12 @@ namespace Loopie
 					{
 						AssetMetadata* metadata = AssetRegistry::GetMetadata(uuids[i]);
 						std::shared_ptr<Mesh> mesh = ResourceDatabase::LoadResource<Mesh>(metadata->uuid);
-						if (mesh)
-							meshRenderers.push_back(new MeshRenderer(mesh));
-
+						if (mesh) {
+							std::shared_ptr<Entity> newEntity = scene->CreateEntity("ModelEntity");
+							newEntity->SetParent(meshContainerEntity);
+							std::shared_ptr<MeshRenderer> renderer = newEntity->AddComponent<MeshRenderer>();
+							renderer->SetMesh(mesh);
+						}
 					}
 				}
 			}
@@ -101,16 +113,20 @@ namespace Loopie
 		if (inputEvent.GetKeyStatus(SDL_SCANCODE_D) == KeyState::REPEAT)
 			moveCameraInput.x -= 1;
 
-		cameraT.Translate(moveCameraInput * 10.f * dt);
+		camera->GetTransform()->Translate(moveCameraInput * 10.f * dt);
 		rotation = SPEED * dt;
-		meshT.Rotate({ 0,rotation,0 });
-		glm::mat4 modelViewProj = camera->GetViewProjectionMatrix() * meshT.GetTransformMatrix();
+		//meshContainerEntity->GetTransform()->Rotate({0,rotation,0}); //// this should Propagete to its childs
 
-		for (size_t i = 0; i < meshRenderers.size(); i++)
-		{
-			meshRenderers[i]->GetShader().Bind();
-			meshRenderers[i]->GetShader().SetUniformMat4("modelViewProj", modelViewProj);
-			meshRenderers[i]->Render();
+		const matrix4& viewProj = camera->GetViewProjectionMatrix();
+		for (auto& entity : scene->GetAllEntities()) {
+			std::shared_ptr<MeshRenderer> renderer = entity.second->GetComponent<MeshRenderer>();
+			if (renderer) {
+				renderer->GetTransform()->Rotate({ 0,rotation,0 }); //// this should Propagete to its childs
+				glm::mat4 modelViewProj = viewProj * entity.second->GetTransform()->GetTransformMatrix();
+				renderer->GetShader().Bind();
+				renderer->GetShader().SetUniformMat4("modelViewProj", modelViewProj);
+				renderer->Render();
+			}
 		}
 	}
 

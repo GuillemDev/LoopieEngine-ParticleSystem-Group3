@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Loopie/Components/Transform.h"
 
 namespace Loopie {
 	Scene::Scene(const std::string& filePath)
@@ -21,6 +22,8 @@ namespace Loopie {
 	std::shared_ptr<Entity> Scene::CreateEntity(const std::string& name)
 	{
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>(name);
+		
+		entity->m_transform = entity->AddComponent<Transform>();
 		m_entities[entity->GetUuid()] = entity;
 		return entity;
 	}

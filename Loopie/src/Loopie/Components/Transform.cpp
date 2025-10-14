@@ -159,4 +159,8 @@ namespace Loopie
         if (OnTransformDirty)
             OnTransformDirty();
     }
+
+    void Transform::Init()
+    {
+    }
 }

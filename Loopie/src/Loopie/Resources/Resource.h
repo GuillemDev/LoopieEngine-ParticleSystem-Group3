@@ -6,7 +6,7 @@ namespace Loopie {
 	class Resource {
 	public:
 		Resource(UUID uuid) : m_uuid(uuid) {}
-		~Resource() = default;
+		virtual ~Resource();
 
 		const UUID& GetUUID() { return m_uuid; }
 

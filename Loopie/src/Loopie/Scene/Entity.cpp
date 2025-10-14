@@ -1,9 +1,12 @@
 #include "Entity.h"
 
+#include "Loopie/Components/Component.h"
+#include "Loopie/Components/Transform.h"
+
 namespace Loopie {
 	Entity::Entity(const std::string& name) : m_name(name)
 	{
-
+		
 	}
 
 	Entity::~Entity()
@@ -12,7 +15,7 @@ namespace Loopie {
 		m_childrenEntities.clear();
 	}
 
-	const std::shared_ptr<Component> Entity::AddComponent(const std::shared_ptr<Component> component)
+	/*std::shared_ptr<Component> Entity::AddComponent(const std::shared_ptr<Component> component)
 	{
 		if (component)
 		{
@@ -20,7 +23,7 @@ namespace Loopie {
 			return component;
 		}
 		return nullptr;
-	}
+	}*/
 
 	void Entity::AddChild(std::shared_ptr<Entity> child)
 	{
@@ -100,6 +103,11 @@ namespace Loopie {
 	std::vector<std::shared_ptr<Component>> Entity::GetComponents() const
 	{
 		return m_components;
+	}
+
+	const std::shared_ptr<Transform>& Entity::GetTransform() const
+	{
+		return m_transform;
 	}
 
 	void Entity::SetName(const std::string& name)

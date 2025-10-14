@@ -1,11 +1,14 @@
 #include "Camera.h"
 
+#include "Loopie/Scene/Entity.h"
+#include "Loopie/Components/Transform.h"
+
+
 namespace Loopie
 {
-	Camera::Camera(Transform& transform, float fov, float near_plane, float far_plane): m_transform(transform), m_fov(fov), m_nearPlane(near_plane), m_farPlane(far_plane)
+	Camera::Camera(float fov, float near_plane, float far_plane): m_fov(fov), m_nearPlane(near_plane), m_farPlane(far_plane)
 	{
-		m_transform.OnTransformDirty = [this]() { SetDirty(); };
-		CalculateMatrices();
+		
 	}
 
 	void Camera::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
@@ -70,13 +73,18 @@ namespace Loopie
 	{
 		if (!m_dirty)
 			return;
-
-		m_viewMatrix = m_transform.GetTransformMatrix();
+		
+		m_viewMatrix = GetTransform()->GetTransformMatrix();
 		m_projectionMatrix = glm::perspective(glm::radians(m_fov), m_viewport.z / m_viewport.w, m_nearPlane, m_farPlane);
 		m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 	}
 
 	void Camera::SetDirty() const{
 		m_dirty = true;
+	}
+	void Camera::Init()
+	{
+		GetTransform()->OnTransformDirty = [this]() { SetDirty(); };
+		CalculateMatrices();
 	}
 }

@@ -11,12 +11,17 @@ namespace Loopie {
 		m_shader.Unbind();
 	}
 
-	MeshRenderer::MeshRenderer(std::shared_ptr<Mesh> mesh) : MeshRenderer()
-	{
-		m_mesh = mesh;
-	}
 	void MeshRenderer::Render() {
 		if(m_mesh)
 			Renderer::Draw(m_mesh->m_vao, m_shader);
+	}
+
+	void MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh)
+	{
+		m_mesh = mesh;
+	}
+
+	void MeshRenderer::Init()
+	{
 	}
 }
