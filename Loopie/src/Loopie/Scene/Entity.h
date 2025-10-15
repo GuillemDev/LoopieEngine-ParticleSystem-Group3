@@ -24,16 +24,15 @@ namespace Loopie {
 		T* AddComponent()
 		{
 			if constexpr (std::is_same_v<T, Transform>) {
-				if (m_transform) 
+				if (m_transform)
 					return GetTransform();
 			}
 
-			std::unique_ptr<T> component = std::make_unique<T>();
-			component->m_owner = weak_from_this();
-			component->Init();
+			m_components.push_back(std::make_unique<T>());
+			T* componentPtr = static_cast<T*>(m_components.back().get());
 
-			T* componentPtr = component.get();
-			m_components.push_back(std::move(component));
+			componentPtr->m_owner = weak_from_this();
+			componentPtr->Init();
 
 			if constexpr (std::is_same_v<T, Transform>) {
 				m_transform = componentPtr;
