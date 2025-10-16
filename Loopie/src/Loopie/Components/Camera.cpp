@@ -69,12 +69,12 @@ namespace Loopie
 	}
 
 
-	void Loopie::Camera::CalculateMatrices() const
+	void Camera::CalculateMatrices() const
 	{
 		if (!m_dirty)
 			return;
 		
-		m_viewMatrix = GetTransform()->GetTransformMatrix();
+		m_viewMatrix = glm::inverse(GetTransform()->GetTransformMatrix());
 		m_projectionMatrix = glm::perspective(glm::radians(m_fov), m_viewport.z / m_viewport.w, m_nearPlane, m_farPlane);
 		m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 	}

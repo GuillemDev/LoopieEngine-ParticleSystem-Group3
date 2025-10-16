@@ -94,7 +94,6 @@ namespace Loopie
 
     void Transform::Translate(const vec3& translation, bool localSpace)
     {
-        Log::Info("rotation: {0} {1} {2} {3}", m_rotation.x, m_rotation.y, m_rotation.z, m_rotation.w);
         if (localSpace)
             m_position += m_rotation * translation;
         else
