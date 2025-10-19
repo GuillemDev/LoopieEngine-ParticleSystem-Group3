@@ -83,7 +83,7 @@ namespace Loopie {
 		void RemoveChild(const std::shared_ptr<Entity>& child);
 		void RemoveChild(UUID childUuid);
 
-		const UUID& GetUuid() const;
+		const UUID& GetUUID() const;
 		const std::string& GetName() const;
 		bool GetIsActive() const;
 		std::shared_ptr<Entity> GetChild(UUID uuid) const;
@@ -92,7 +92,7 @@ namespace Loopie {
 		std::vector<Component*> GetComponents() const;
 		Transform* GetTransform() const;
 
-		void SetUuid(const std::string newUuid);
+		void SetUUID(const std::string uuid);
 		void SetName(const std::string& name);
 		void SetIsActive(bool active);
 		// If a parent is set up, then it means this is its child and will update it accordingly

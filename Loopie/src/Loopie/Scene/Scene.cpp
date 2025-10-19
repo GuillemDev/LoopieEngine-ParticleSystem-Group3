@@ -36,7 +36,7 @@ namespace Loopie {
 
 		entity->AddComponent<Transform>();
 
-		m_entities[entity->GetUuid()] = entity;
+		m_entities[entity->GetUUID()] = entity;
 		return entity;
 	}
 
@@ -51,7 +51,7 @@ namespace Loopie {
 			parentEntity->AddChild(entity);
 
 		entity->AddComponent<Transform>(position, rotation, scale);
-		m_entities[entity->GetUuid()] = entity;
+		m_entities[entity->GetUUID()] = entity;
 
 		return entity;
 	}
@@ -75,7 +75,7 @@ namespace Loopie {
 		{
 			entity->AddComponent<Transform>(*transform);
 		}
-		m_entities[entity->GetUuid()] = entity;
+		m_entities[entity->GetUUID()] = entity;
 
 		return entity;
 	}

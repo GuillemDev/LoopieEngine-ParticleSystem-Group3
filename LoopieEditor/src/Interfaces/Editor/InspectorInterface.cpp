@@ -57,7 +57,7 @@ namespace Loopie {
 		
 		ImGui::Separator();
 		
-		ImGui::TextDisabled("UUID: %s", entity->GetUuid().Get().c_str());
+		ImGui::TextDisabled("UUID: %s", entity->GetUUID().Get().c_str());
 
 		ImGui::Separator();
 	}

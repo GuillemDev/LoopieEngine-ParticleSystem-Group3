@@ -59,7 +59,7 @@ namespace Loopie {
 	{
 		for (auto it = m_childrenEntities.begin(); it != m_childrenEntities.end(); ++it)
 		{
-			if ((*it)->GetUuid() == childUuid)
+			if ((*it)->GetUUID() == childUuid)
 			{
 				(*it)->m_parentEntity.reset();
 				m_childrenEntities.erase(it);
@@ -68,7 +68,7 @@ namespace Loopie {
 		}
 	}
 
-	const UUID& Entity::GetUuid() const
+	const UUID& Entity::GetUUID() const
 	{
 		return m_uuid;
 	}
@@ -87,7 +87,7 @@ namespace Loopie {
 	{
 		for (const auto& child : m_childrenEntities)
 		{
-			if (child->GetUuid() == uuid)
+			if (child->GetUUID() == uuid)
 			{
 				return child;
 			}
@@ -122,9 +122,9 @@ namespace Loopie {
 		return m_transform;
 	}
 
-	void Entity::SetUuid(const std::string newUuid)
+	void Entity::SetUUID(const std::string uuid)
 	{
-		m_uuid = UUID(newUuid);
+		m_uuid = UUID(uuid);
 	}
 
 	void Entity::SetName(const std::string& name)
