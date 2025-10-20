@@ -10,7 +10,7 @@ namespace Loopie {
 
 	void MeshRenderer::Render() {
 		if(m_mesh)
-			Renderer::Draw(m_mesh->m_vao, m_shader);
+			Renderer::Draw(m_mesh->m_vao, m_material);
 	}
 
 	void MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh)
@@ -18,17 +18,13 @@ namespace Loopie {
 		m_mesh = mesh;
 	}
 
-	void MeshRenderer::SetTexture(std::shared_ptr<Texture> texture)
+	void MeshRenderer::SetMaterial(std::shared_ptr<Material> material)
 	{
-		m_texture = texture;
-
-		m_shader.Bind();
-		m_texture->m_tb->Bind();
-		m_shader.SetUniformInt("u_Texture", 0);
-		m_shader.Unbind();
+		m_material = material;
 	}
 
 	void MeshRenderer::Init()
 	{
+		m_material = std::make_shared<Material>();
 	}
 }

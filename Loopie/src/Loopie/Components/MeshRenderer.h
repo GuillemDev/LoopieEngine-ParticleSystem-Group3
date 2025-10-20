@@ -2,9 +2,7 @@
 #include "Loopie/Components/Component.h"
 
 #include "Loopie/Resources/Types/Mesh.h"
-#include "Loopie/Resources/Types/Texture.h"
-#include "Loopie/Render/Shader.h"
-
+#include "Loopie/Resources/Types/Material.h"
 
 #include <memory>
 
@@ -18,19 +16,16 @@ namespace Loopie {
 
 		void Render();
 
-		Shader& GetShader() { return m_shader; }
+		
 		std::shared_ptr<Mesh> GetMesh() { return m_mesh; }
 		void SetMesh(std::shared_ptr<Mesh> mesh);
 
-		std::shared_ptr<Texture> GetTexture() { return m_texture; }
-		void SetTexture(std::shared_ptr<Texture> texture);
-		
-
+		std::shared_ptr<Material> GetMaterial() { return m_material; }
+		void SetMaterial(std::shared_ptr <Material> material);
 		void Init() override; //// From Component
 	private:
 
-		Shader m_shader = Shader("assets/shaders/CorrectShader.shader");
-		std::shared_ptr<Texture> m_texture;
+		std::shared_ptr <Material> m_material;
 		std::shared_ptr<Mesh> m_mesh;
 	};
 }

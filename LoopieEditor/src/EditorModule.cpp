@@ -113,7 +113,7 @@ namespace Loopie
 						{
 							MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
 							if (renderer) {
-								renderer->SetTexture(texture);
+								renderer->GetMaterial()->SetTexture(texture);
 							}
 						}
 					}
@@ -129,7 +129,7 @@ namespace Loopie
 							{
 								MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
 								if (renderer) {
-									renderer->SetTexture(texture);
+									renderer->GetMaterial()->SetTexture(texture);
 								}
 							}
 						}
@@ -151,8 +151,8 @@ namespace Loopie
 			if (renderer) {
 				renderer->GetTransform()->DegreesRotate({ 0,rotation,0 }); //// this should Propagete to its childs
 				glm::mat4 modelViewProj = viewProj * entity.second->GetTransform()->GetTransformMatrix();
-				renderer->GetShader().Bind();
-				renderer->GetShader().SetUniformMat4("modelViewProj", modelViewProj);
+				renderer->GetMaterial()->GetShader().Bind();
+				renderer->GetMaterial()->GetShader().SetUniformMat4("modelViewProj", modelViewProj);
 				renderer->Render();
 			}
 		}

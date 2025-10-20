@@ -56,15 +56,13 @@ namespace Loopie
 	{
 		Transform* transform = m_entity->GetTransform();
 		
-		// Update pitch and yaw
-		m_yaw += - m_inputRotation.x * dt; // Yaw around world up
-		m_pitch += - m_inputRotation.y * dt; // Pitch around local right
+		m_yaw += - m_inputRotation.x * dt;
+		m_pitch += - m_inputRotation.y * dt;
 
-		// Build new rotation from yaw and pitch — no roll
-		glm::quat yawRotation = glm::normalize(glm::angleAxis(m_yaw, vec3(0, 1, 0))); // global Y up
-		glm::quat pitchRotation = glm::normalize(glm::angleAxis(m_pitch, vec3(1, 0, 0))); // local X
+		glm::quat yawRotation = glm::normalize(glm::angleAxis(m_yaw, vec3(0, 1, 0)));
+		glm::quat pitchRotation = glm::normalize(glm::angleAxis(m_pitch, vec3(1, 0, 0)));
 
-		transform->QuaternionSetRotation(yawRotation * pitchRotation);
+		transform->QuaternionSetRotation(glm::normalize(yawRotation * pitchRotation));
 
 		if (glm::length(m_inputDirection) > 0.001f)
 			transform->Translate(m_inputDirection * m_speedMultiplier * m_directionSpeed * dt);
