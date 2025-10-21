@@ -18,6 +18,10 @@ namespace Loopie {
 
 		static void DrawLine(const vec3& p0, const vec3& p1, const vec4& color = {1,1,1,1});
 
+		static void SetGridSize(int size);
+		static void SetGridSpacing(float spacing);
+		static void SetGridColor(vec4 color);
+
 	private:
 
 		static void BeginGizmo(const matrix4 viewProjectionMatrix);
@@ -26,6 +30,8 @@ namespace Loopie {
 		static void Flush();
 		static void StartBatch();
 		static void NextBatch();
+
+		static void DrawGrid();
 
 		struct LineVertex
 		{
@@ -52,6 +58,13 @@ namespace Loopie {
 			LineVertex* LineBufferModel = nullptr;
 			LineVertex* LineBuffer = nullptr;
 			unsigned int LineCount = 0;
+			///
+
+			/// Grid
+			int GridHalfSize=50;
+			float GridSpacing = 10;
+			bool DrawGrid = true;
+			vec4 GridColor = { 0.6f, 0.6f, 0.6f, 1.0f };
 			///
 
 			matrix4 ViewProjection = matrix4(1);

@@ -56,6 +56,8 @@ namespace Loopie {
 			SDL_DestroyWindow(m_window);
 			m_window = nullptr;
 		}
+
+		Renderer::Shutdown();
 	}
 
 	void Window::StartFrame() {

@@ -28,7 +28,7 @@ namespace Loopie
 		Application::GetInstance().CreateScene(""); /// Maybe default One
 		scene = &Application::GetInstance().GetScene();
 		camera = new OrbitalCamera();
-		camera->GetCamera()->GetTransform()->SetPosition({0,0,-50.f});
+		camera->GetCamera()->GetTransform()->SetPosition({0,10,50.f});
 
 		meshContainerEntity = scene->CreateEntity("ModelContainer");
 		////

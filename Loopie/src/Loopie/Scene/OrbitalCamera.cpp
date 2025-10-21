@@ -9,7 +9,7 @@ namespace Loopie
 	{
 		m_entity = std::make_shared<Entity>("OrbitalCamera");
 		m_entity->AddComponent<Transform>();
-		m_camera = m_entity->AddComponent<Camera>();
+		m_camera = m_entity->AddComponent<Camera>( 45.0f,  0.1f, 1000.0f);
 	}
 
 	OrbitalCamera::~OrbitalCamera()

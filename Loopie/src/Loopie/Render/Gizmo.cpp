@@ -45,7 +45,9 @@ namespace Loopie {
 		s_Data.LineRender.Shader->Bind();
 		s_Data.LineRender.Shader->SetUniformMat4("u_ViewProjection", s_Data.ViewProjection);
 
+
 		StartBatch();
+		DrawGrid();
 	}
 
 	void Gizmo::EndGizmo()
@@ -73,6 +75,21 @@ namespace Loopie {
 
 	}
 
+	void Gizmo::SetGridSize(int size)
+	{
+		s_Data.GridHalfSize = size / 2;
+	}
+
+	void Gizmo::SetGridSpacing(float spacing)
+	{
+		s_Data.GridSpacing = spacing;
+	}
+
+	void Gizmo::SetGridColor(vec4 color)
+	{
+		s_Data.GridColor = color;
+	}
+
 	void Gizmo::Flush() {
 		if (s_Data.LineCount == 0)
 			return;
@@ -93,5 +110,19 @@ namespace Loopie {
 	{
 		EndGizmo();
 		StartBatch();
+	}
+
+	void Gizmo::DrawGrid()
+	{
+		if (s_Data.DrawGrid) {
+			for (int i = -s_Data.GridHalfSize; i <= s_Data.GridHalfSize; i++)
+			{
+				float position = i * s_Data.GridSpacing;
+
+				Gizmo::DrawLine({ position, 0.0f, -s_Data.GridHalfSize * s_Data.GridSpacing }, { position, 0.0f, s_Data.GridHalfSize * s_Data.GridSpacing }, s_Data.GridColor);
+
+				Gizmo::DrawLine({ -s_Data.GridHalfSize * s_Data.GridSpacing, 0.0f, position }, { s_Data.GridHalfSize * s_Data.GridSpacing, 0.0f, position }, s_Data.GridColor);
+			}
+		}
 	}
 }
