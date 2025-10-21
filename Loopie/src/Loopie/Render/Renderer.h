@@ -1,6 +1,6 @@
 #pragma once
 #include "Loopie/Core/Math.h"
-#include "Loopie/Render/Shader.h"
+#include "Loopie/Resources/Types/Material.h"
 #include "Loopie/Render/VertexArray.h"
 
 #include <filesystem>
@@ -20,6 +20,6 @@ namespace Loopie {
 		static void BeginScene(const matrix4 viewProjectionMatrix);
 		static void EndScene();
 
-		static void Draw(std::shared_ptr<VertexArray> vao, Shader& shader, const Transform* transform);
+		static void Draw(std::shared_ptr<VertexArray> vao, std::shared_ptr<Material> material, const Transform* transform);
 	};
 }

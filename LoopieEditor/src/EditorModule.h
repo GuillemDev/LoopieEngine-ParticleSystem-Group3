@@ -13,7 +13,7 @@
 
 #include "Loopie/Core/Math.h"
 #include "Loopie/Components/MeshRenderer.h"
-#include "Loopie/Components/Camera.h"
+#include "Loopie/Files/OrbitalCamera.h"
 #include "Loopie/Components/Transform.h"
 
 ///
@@ -41,8 +41,7 @@ namespace Loopie {
 
 		/// Test
 		Scene* scene;
-		std::shared_ptr<Entity> cameraEntity;
-		Camera* camera;
+		OrbitalCamera* camera;
 		std::shared_ptr<Entity> meshContainerEntity;
 
 		const float SPEED = 100.0f;

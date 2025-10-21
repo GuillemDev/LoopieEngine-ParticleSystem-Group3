@@ -7,7 +7,7 @@
 namespace Loopie {
 
 	class Texture : public Resource {
-		friend class MeshRenderer;
+		friend class Material;
 	public:
 		DEFINE_TYPE(Texture)
 

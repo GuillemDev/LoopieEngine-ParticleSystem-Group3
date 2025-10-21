@@ -28,6 +28,7 @@ namespace Loopie
 
     // Vector operations
     using glm::normalize;
+
     using glm::cross;
     using glm::dot;
     using glm::length;

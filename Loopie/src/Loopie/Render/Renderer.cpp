@@ -53,10 +53,10 @@ namespace Loopie {
 		Gizmo::EndGizmo();
 	}
 
-	void Renderer::Draw(std::shared_ptr<VertexArray> vao, Shader& shader, const Transform* transform) {
+	void Renderer::Draw(std::shared_ptr<VertexArray> vao, std::shared_ptr<Material> material, const Transform* transform) {
 		vao->Bind();
-		shader.Bind();
-		shader.SetUniformMat4("u_Transform", transform->GetTransformMatrix());
+		material->Bind();
+		material->GetShader()->SetUniformMat4("u_Transform", transform->GetTransformMatrix());
 		glDrawElements(GL_TRIANGLES, vao->GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, nullptr);
 		vao->Unbind();
 	}

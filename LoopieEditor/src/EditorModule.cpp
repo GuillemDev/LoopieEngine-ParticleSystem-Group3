@@ -27,16 +27,14 @@ namespace Loopie
 		/////SCENE
 		Application::GetInstance().CreateScene(""); /// Maybe default One
 		scene = &Application::GetInstance().GetScene();
-
-		cameraEntity = scene->CreateEntity("Camera");
-		camera = cameraEntity->AddComponent<Camera>();
-		camera->GetTransform()->SetPosition({ 0,0,-50.f });
+		camera = new OrbitalCamera();
+		camera->GetCamera()->GetTransform()->SetPosition({0,0,-50.f});
 
 		meshContainerEntity = scene->CreateEntity("ModelContainer");
 		////
 	
 		ivec2 windowSize = Application::GetInstance().GetWindow().GetSize();
-		camera->SetViewport(0, 0, windowSize.x, windowSize.y);
+		camera->GetCamera()->SetViewport(0, 0, windowSize.x, windowSize.y);
 
 		m_hierarchy.SetScene(scene);
 	}
@@ -53,7 +51,7 @@ namespace Loopie
 
 		if (inputEvent.HasEvent(SDL_EVENT_WINDOW_RESIZED)) {
 			ivec2 windowSize = Application::GetInstance().GetWindow().GetSize();
-			camera->SetViewport(0, 0, windowSize.x, windowSize.y);
+			camera->GetCamera()->SetViewport(0, 0, windowSize.x, windowSize.y);
 		}
 		if (inputEvent.GetKeyStatus(SDL_SCANCODE_I) == KeyState::DOWN) {
 			app.SetInterfaceState(!app.IsInterfaceVisible());
@@ -115,7 +113,7 @@ namespace Loopie
 						{
 							MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
 							if (renderer) {
-								renderer->SetTexture(texture);
+								renderer->GetMaterial()->SetTexture(texture);
 							}
 						}
 					}
@@ -131,7 +129,7 @@ namespace Loopie
 							{
 								MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
 								if (renderer) {
-									renderer->SetTexture(texture);
+									renderer->GetMaterial()->SetTexture(texture);
 								}
 							}
 						}
@@ -141,30 +139,21 @@ namespace Loopie
 			}
 		}
 
-		vec3 moveCameraInput = { 0,0,0 };
-		if (inputEvent.GetKeyStatus(SDL_SCANCODE_W) == KeyState::REPEAT)
-			moveCameraInput.z += 1;
-		if (inputEvent.GetKeyStatus(SDL_SCANCODE_S) == KeyState::REPEAT)
-			moveCameraInput.z -= 1;
-		if (inputEvent.GetKeyStatus(SDL_SCANCODE_A) == KeyState::REPEAT)
-			moveCameraInput.x += 1;
-		if (inputEvent.GetKeyStatus(SDL_SCANCODE_D) == KeyState::REPEAT)
-			moveCameraInput.x -= 1;
+		camera->ProcessEvent(inputEvent);
+		camera->Update(dt);
 
-		camera->GetTransform()->Translate(moveCameraInput * 10.f * dt);
 		rotation = SPEED * dt;
 		//meshContainerEntity->GetTransform()->Rotate({0,rotation,0}); //// this should Propagete to its childs
 
-		const matrix4& viewProj = camera->GetViewProjectionMatrix();
-
+		const matrix4& viewProj = camera->GetCamera()->GetViewProjectionMatrix();
 		Renderer::BeginScene(viewProj);
 
 		for (auto& entity : scene->GetAllEntities()) {
 			MeshRenderer* renderer = entity.second->GetComponent<MeshRenderer>();
 			if (renderer) {
-				renderer->GetTransform()->Rotate({ 0,rotation,0 }); //// this should Propagete to its childs
-				renderer->GetShader().Bind();
-				renderer->GetShader().SetUniformMat4("u_ViewProjection", viewProj);
+				renderer->GetTransform()->DegreesRotate({ 0,rotation,0 }); //// this should Propagete to its childs
+				renderer->GetMaterial()->GetShader().Bind();
+				renderer->GetMaterial()->GetShader().SetUniformMat4("u_ViewProjection", viewProj);
 				renderer->Render();
 			}
 		}
