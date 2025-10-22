@@ -18,7 +18,7 @@ namespace Loopie {
 	{
 		std::string iconPath = "assets/icons/icon_file.png";
 		if (!AssetRegistry::AssetExists(iconPath)) {
-			std::string cacheFile = TextureImporter::LoadImage(iconPath);
+			std::string cacheFile = TextureImporter::ImportImage(iconPath);
 			AssetMetadata metadata = AssetRegistry::CreateAssetMetadata(iconPath, cacheFile);
 			AssetRegistry::RegisterAsset(metadata);
 		}
@@ -26,7 +26,7 @@ namespace Loopie {
 
 		iconPath = "assets/icons/icon_folder.png";
 		if (!AssetRegistry::AssetExists(iconPath)) {
-			std::string cacheFile = TextureImporter::LoadImage(iconPath);
+			std::string cacheFile = TextureImporter::ImportImage(iconPath);
 			AssetMetadata metadata = AssetRegistry::CreateAssetMetadata(iconPath, cacheFile);
 			AssetRegistry::RegisterAsset(metadata);
 		}
@@ -34,7 +34,7 @@ namespace Loopie {
 
 		iconPath = "assets/icons/icon_folderFill.png";
 		if (!AssetRegistry::AssetExists(iconPath)) {
-			std::string cacheFile = TextureImporter::LoadImage(iconPath);
+			std::string cacheFile = TextureImporter::ImportImage(iconPath);
 			AssetMetadata metadata = AssetRegistry::CreateAssetMetadata(iconPath, cacheFile);
 			AssetRegistry::RegisterAsset(metadata);
 		}

@@ -1,13 +1,16 @@
 #pragma once
+#include "Loopie/Resources/Types/Mesh.h"
 
 #include <memory>
 #include <vector>
 #include <string>
 
+
 namespace Loopie {
 	class MeshImporter {
 	public:
-		static std::vector<std::string> LoadModel(const std::string& filepath);
+		static std::vector<std::string> ImportModel(const std::string& filepath);
+		static void LoadModel(const std::string& path, Mesh& mesh);
 		static bool CheckIfIsModel(const char* path);
 
 	private:

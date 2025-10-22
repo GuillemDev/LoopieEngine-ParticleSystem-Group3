@@ -4,6 +4,7 @@
 #include "Loopie/Render/IndexBuffer.h"
 #include "Loopie/Render/VertexBuffer.h"
 #include "Loopie/Render/VertexArray.h"
+
 #include <vector>
 #include <memory>
 
@@ -26,6 +27,7 @@ namespace Loopie {
 	
 	class Mesh : public Resource{
 		friend class MeshRenderer;
+		friend class MeshImporter;
 	public :
 		DEFINE_TYPE(Mesh)
 

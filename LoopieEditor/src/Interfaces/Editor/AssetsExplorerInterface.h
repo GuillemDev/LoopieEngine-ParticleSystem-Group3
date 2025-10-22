@@ -1,5 +1,6 @@
 #pragma once 
 
+#include "Loopie/Resources/Types/Texture.h"
 #include "src/Interfaces/Interface.h"
 #include "src/ImGuiHelpers/ImGuiHelpers.h"
 
@@ -9,8 +10,6 @@
 #include <string>
 
 namespace Loopie {
-	class Texture;
-
 	class AssetsExplorerInterface : public Interface {
 	public:
 		AssetsExplorerInterface();

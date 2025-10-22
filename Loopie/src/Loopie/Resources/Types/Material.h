@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Loopie/Render/Shader.h"
 #include "Loopie/Resources/Types/Texture.h"
 namespace Loopie

@@ -1,5 +1,7 @@
-#include "Loopie/Render/TextureBuffer.h"
+#pragma once
 #include "Loopie/Resources/Resource.h"
+
+#include "Loopie/Render/TextureBuffer.h"
 
 #include <vector>
 #include <memory>
@@ -8,6 +10,7 @@ namespace Loopie {
 
 	class Texture : public Resource {
 		friend class Material;
+		friend class TextureImporter;
 	public:
 		DEFINE_TYPE(Texture)
 

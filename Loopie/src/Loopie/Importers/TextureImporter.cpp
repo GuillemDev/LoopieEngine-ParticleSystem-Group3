@@ -11,7 +11,7 @@
 #include <IL/ilu.h>
 
 namespace Loopie {
-	std::string TextureImporter::LoadImage(const std::string& filepath)
+	std::string TextureImporter::ImportImage(const std::string& filepath)
 	{
 		std::string outputPath;
 
@@ -68,6 +68,42 @@ namespace Loopie {
 		}
 
 		return "";
+	}
+
+	void TextureImporter::LoadImage(const std::string& path, Texture& texture)
+	{
+		std::filesystem::path filepath = path;
+		if (!std::filesystem::exists(path))
+			return;
+
+
+		/// READ
+		std::ifstream file(path, std::ios::binary);
+		if (!file) {
+			Log::Warn("Error opening .texture file -> {0}", path.c_str());
+			return;
+		}
+
+		file.seekg(0, std::ios::end);
+		std::streamsize size = file.tellg();
+		file.seekg(0, std::ios::beg);
+
+		if (size <= 0) {
+			Log::Warn("Error reading .texture file -> {0}", path.c_str());
+			return;
+		}
+
+		file.read(reinterpret_cast<char*>(&texture.m_width), sizeof texture.m_width);
+		file.read(reinterpret_cast<char*>(&texture.m_height), sizeof texture.m_height);
+		file.read(reinterpret_cast<char*>(&texture.m_channels), sizeof texture.m_channels);
+
+		size_t imageSize = static_cast<size_t>(texture.m_width) * texture.m_height * texture.m_channels;
+		texture.m_pixels.resize(imageSize);
+		file.read(reinterpret_cast<char*>(texture.m_pixels.data()), imageSize);
+
+		file.close();
+
+		texture.m_tb = std::make_shared<TextureBuffer>(texture.m_pixels.data(), texture.m_width, texture.m_height, texture.m_channels);
 	}
 
 	bool TextureImporter::CheckIfIsImage(const char* path)

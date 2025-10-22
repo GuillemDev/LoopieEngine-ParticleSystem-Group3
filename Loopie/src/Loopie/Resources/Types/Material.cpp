@@ -9,7 +9,7 @@ namespace Loopie
 
 		std::string defaultTeturePath = "assets/textures/simpleWhiteTexture.png";
 		if (!AssetRegistry::AssetExists(defaultTeturePath)) {
-			std::string cacheFile = TextureImporter::LoadImage(defaultTeturePath);
+			std::string cacheFile = TextureImporter::ImportImage(defaultTeturePath);
 			AssetMetadata metadata = AssetRegistry::CreateAssetMetadata(defaultTeturePath, cacheFile);
 			AssetRegistry::RegisterAsset(metadata);
 		}

@@ -69,7 +69,7 @@ namespace Loopie
 			if (MeshImporter::CheckIfIsModel(fileName)) {
 
 				if (!AssetRegistry::AssetExists(fileName)) {
-					std::vector<std::string> cacheFiles = MeshImporter::LoadModel(fileName);
+					std::vector<std::string> cacheFiles = MeshImporter::ImportModel(fileName);
 
 					for (size_t i = 0; i < cacheFiles.size(); i++)
 					{
@@ -100,7 +100,7 @@ namespace Loopie
 			}
 			else if(TextureImporter::CheckIfIsImage(fileName)) {
 				if (!AssetRegistry::AssetExists(fileName)) {
-					std::string cacheFile = TextureImporter::LoadImage(fileName);
+					std::string cacheFile = TextureImporter::ImportImage(fileName);
 					AssetMetadata metadata = AssetRegistry::CreateAssetMetadata(fileName, cacheFile);
 					AssetRegistry::RegisterAsset(metadata);
 					AssetRegistry::RegisterAsset(metadata);
