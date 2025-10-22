@@ -5,6 +5,7 @@
 #include "Loopie/Resources/AssetRegistry.h"
 
 
+#include <filesystem>
 #include <unordered_map>
 #include <memory>
 #include <type_traits>

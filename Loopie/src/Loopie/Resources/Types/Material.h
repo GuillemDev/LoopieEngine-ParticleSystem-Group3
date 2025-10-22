@@ -20,5 +20,6 @@ namespace Loopie
 	private:
 		Shader m_shader = Shader("assets/shaders/CorrectShader.shader");
 		std::shared_ptr<Texture> m_texture;
+		std::shared_ptr<Texture> m_defaultTexture;
 	};
 }
