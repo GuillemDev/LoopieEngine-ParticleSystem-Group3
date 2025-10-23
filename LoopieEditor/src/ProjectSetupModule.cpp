@@ -10,7 +10,7 @@
 
 namespace Loopie
 {
-	void ProjectSetupModule::OnUpdate()
+	void ProjectSetupModule::OnUpdate(float dt)
 	{
 		Application& app = Application::GetInstance();
 		if (!app.m_activeProject.IsEmpty())
@@ -22,8 +22,8 @@ namespace Loopie
 	void ProjectSetupModule::OnLoad()
 	{
 		m_interface = new ProjectSetupInterface();
-		Application::GetInstance().GetWindow()->SetTitle("Loopie Engine | Project Setup");
-		Application::GetInstance().GetWindow()->SetResizable(false);
+		Application::GetInstance().GetWindow().SetTitle("Loopie Engine | Project Setup");
+		Application::GetInstance().GetWindow().SetResizable(false);
 	}
 	void ProjectSetupModule::OnUnload()
 	{

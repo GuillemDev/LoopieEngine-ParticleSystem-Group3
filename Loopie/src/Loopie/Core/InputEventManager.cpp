@@ -1,6 +1,9 @@
 #include "InputEventManager.h"
 #include "Loopie/Core/Log.h"
 
+#include "Loopie/Core/Application.h"
+#include "Loopie/Core/Window.h"
+
 #include <SDL3/SDL.h>
 #include <imgui_impl_sdl3.h>
 #include <cmath>
@@ -29,10 +32,19 @@ namespace Loopie {
 			m_events[t] = false;
 		}
 		m_touchedEvents.clear();
+		m_droppedFiles.clear();
 
 		AdvanceKeyStates(m_keyboard);
 		AdvanceKeyStates(m_gamepad);
 		AdvanceKeyStates(m_mouse);
+
+		m_mouseDelta = { 0.0f, 0.0f };
+		m_scrollDelta = { 0.0f, 0.0f };
+
+		anyKey = false;
+		anyButton = false;
+		anyMouseButton = false;
+		any = false;
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -46,8 +58,12 @@ namespace Loopie {
 
 			switch (event.type) {
 				case SDL_EVENT_KEY_DOWN:
-					if (!event.key.repeat)
+
+					if (!event.key.repeat) {
 						m_keyboard[event.key.scancode] = KeyState::DOWN;
+						any = true;
+						anyKey = true;
+					}
 					break;
 
 				case SDL_EVENT_KEY_UP:
@@ -56,6 +72,8 @@ namespace Loopie {
 
 				case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 					m_gamepad[event.gbutton.button] = KeyState::DOWN;
+					any = true;
+					anyButton = true;
 					break;
 
 				case SDL_EVENT_GAMEPAD_BUTTON_UP:
@@ -63,8 +81,11 @@ namespace Loopie {
 					break;
 
 				case SDL_EVENT_MOUSE_BUTTON_DOWN:
-					if (event.button.button <= m_mouse.size())
+					if (event.button.button <= m_mouse.size()) {
 						m_mouse[event.button.button - 1] = KeyState::DOWN;
+						any = true;
+						anyMouseButton = true;
+					}
 					break;
 				case SDL_EVENT_MOUSE_BUTTON_UP:
 					if (event.button.button <= m_mouse.size())
@@ -72,7 +93,12 @@ namespace Loopie {
 					break;
 
 				case SDL_EVENT_MOUSE_MOTION:
+					m_mouseDelta = { event.motion.xrel, event.motion.yrel };
 					m_mousePosition = { event.motion.x, event.motion.y };
+					break;
+
+				case SDL_EVENT_MOUSE_WHEEL:
+					m_scrollDelta = { event.wheel.x, event.wheel.y };
 					break;
 
 				case SDL_EVENT_GAMEPAD_AXIS_MOTION:
@@ -102,11 +128,18 @@ namespace Loopie {
 					break;
 				}
 
+				case SDL_EVENT_DROP_FILE: {
+					const char* droppedFile = event.drop.data;
+					m_droppedFiles.push_back(droppedFile);
+					Log::Info("Dropped file: '{0}'", droppedFile);
+					break;
+				}
+
 				default:
 					break;
 			}
 
-		}
+		}		
 	}
 
 	KeyState InputEventManager::GetKeyStatus(SDL_Scancode keyCode) const
@@ -129,6 +162,16 @@ namespace Loopie {
 		return m_mousePosition;
 	}
 
+	const vec2& InputEventManager::GetMouseDelta() const
+	{
+		return m_mouseDelta;
+	}
+
+	const vec2& InputEventManager::GetScrollDelta() const
+	{
+		return m_scrollDelta;
+	}
+
 	vec2 InputEventManager::GetLeftAxis() const
 	{
 		return { m_axes[SDL_GAMEPAD_AXIS_LEFTX], m_axes[SDL_GAMEPAD_AXIS_LEFTY] };
@@ -147,5 +190,37 @@ namespace Loopie {
 	float InputEventManager::GetRightTrigger() const
 	{
 		return m_axes[SDL_GAMEPAD_AXIS_RIGHT_TRIGGER];
+	}
+
+	std::vector<const char*> InputEventManager::GetDroppedFiles()
+	{
+		return m_droppedFiles;
+	}
+
+	// Remember that index starts at 0.
+	const char* InputEventManager::GetDroppedFile(int index)
+	{
+		if (index >= m_droppedFiles.size() || index < 0)
+		{
+			Log::Info("Attempted to get a dropped file out of range. \nIndex was {0}, dropped files' size is {1}",
+				index, m_droppedFiles.size());
+			return "";
+		}
+		return m_droppedFiles[index];
+	}
+
+	bool InputEventManager::HasFileBeenDropped() const
+	{
+		return !m_droppedFiles.empty();
+	}
+
+	void InputEventManager::SetMouseCaptured(bool capture)
+	{
+		SDL_SetWindowRelativeMouseMode(Application::GetInstance().GetWindow().GetSDLWindow(), capture);
+	}
+
+	bool InputEventManager::IsMouseCaptured() const
+	{
+		return SDL_GetWindowRelativeMouseMode(Application::GetInstance().GetWindow().GetSDLWindow());
 	}
 }

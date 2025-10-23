@@ -1,152 +1,251 @@
 #include "Json.h"
 
-
-
 namespace Loopie {
 
 #pragma region Json
 
-	JsonData Json::ReadFromString(const std::string& data)
-	{
-		JsonData jsonData;
+    JsonData Json::ReadFromString(const std::string& data)
+    {
+        JsonData jsonData;
+        jsonData.m_data = json::parse(data, nullptr, false);
+        jsonData.m_empty = jsonData.m_data.is_discarded();
+        return jsonData;
+    }
 
-		jsonData.m_data = json::parse(data);
+    JsonData Json::ReadFromFile(const std::filesystem::path& filePath)
+    {
+        JsonData jsonData;
+        std::ifstream ifs(filePath);
+        jsonData.m_data = json::parse(ifs, nullptr, false);
+        jsonData.m_empty = jsonData.m_data.is_discarded();
+        return jsonData;
+    }
 
-		jsonData.m_empty = jsonData.m_data.is_discarded();
+    bool Json::WriteToFileFromString(const std::filesystem::path& filePath, const std::string& jsonString, int indent)
+    {
+        std::ofstream ofs(filePath);
+        if (!ofs.is_open()) return false;
+        
+        json j = json::parse(jsonString, nullptr, false);
+        if (j.is_discarded()) return false;
+        ofs << j.dump(indent);
+   
+        return true;
+    }
 
-		return jsonData;
-	}
-
-	JsonData Json::ReadFromFile(const std::filesystem::path& filePath)
-	{
-		JsonData jsonData;
-
-		std::ifstream ifs(filePath);
-		jsonData.m_data = json::parse(ifs);
-		jsonData.m_empty = jsonData.m_data.is_discarded();
-
-		return jsonData;
-	}
-
-	bool Json::WriteToFile(const std::filesystem::path& filePath, const JsonData& jsonData, int indent)
-	{
-		std::ofstream ofs(filePath);
-		if (!ofs.is_open()) return false;
-		ofs << jsonData.m_data.dump(indent);
-		return true;
-	}
+    bool Json::WriteToFileFromData(const std::filesystem::path& filePath, const JsonData& jsonData, int indent)
+    {
+        std::ofstream ofs(filePath);
+        if (!ofs.is_open()) return false;
+        ofs << jsonData.m_data.dump(indent);
+        return true;
+    }
 
 #pragma endregion
+
 
 #pragma region JsonNode
 
-	JsonNode::JsonNode(json* node) : m_node(node) {}
-	JsonNode::JsonNode(json* node, json* parentNode) : m_node(node), m_parentNode(parentNode) {}
+    JsonNode::JsonNode(json* node) : m_node(node) {}
+    JsonNode::JsonNode(json* node, json* parentNode) : m_node(node), m_parentNode(parentNode) {}
 
-	JsonNode JsonNode::Child(const std::string& keyPath) const
-	{
-		if (!Exists())
-			return JsonNode();
+    void JsonNode::Reset() {
+        m_node = nullptr;
+        m_parentNode = nullptr;
+    }
 
-		json* node = m_node;
-		json* parentNode = m_parentNode;
+    unsigned int JsonNode::Size(const std::string& keyPath)
+    {
+        if (keyPath.empty())
+            return Size();
+        JsonNode node = Child(keyPath);
+        return node.Size();
 
-		std::stringstream ss(keyPath);
-		std::string token;
-		while (std::getline(ss, token, '.')) {
-			if (!node->contains(token))
-				return JsonNode();
-			parentNode = node;
-			node = &((*node)[token]);
-		}
+    }
 
-		return JsonNode(node,parentNode);
-	}
+    bool JsonNode::IsArrayEmpty(const std::string& keyPath) const
+    {
+        if (keyPath.empty())
+            return IsArrayEmpty();
+        JsonNode node = Child(keyPath);
+        return node.IsArrayEmpty();
+    }
 
-	void JsonNode::Clear() {
-		m_node = nullptr;
-		m_parentNode = nullptr;
-	}
+    JsonNode JsonNode::Child(const std::string& keyPath) const
+    {
+        if (!IsValid())
+            return JsonNode();
 
-	bool JsonNode::RemoveField(const std::string& keyPath) {
-		if (keyPath.empty())
-			return false;
+        json* node = m_node;
+        json* parentNode = m_parentNode;
 
-		auto pos = keyPath.find_last_of('.');
-		std::string parentPath = (pos == std::string::npos) ? "" : keyPath.substr(0, pos);
-		std::string key = (pos == std::string::npos) ? keyPath : keyPath.substr(pos + 1);
+        std::stringstream ss(keyPath);
+        std::string token;
+        while (std::getline(ss, token, '.')) {
+            if (!node->contains(token))
+                return JsonNode();
+            parentNode = node;
+            node = &((*node)[token]);
+        }
 
-		JsonNode node = Child(parentPath);
-		if (!node.Exists())
-			return false;
+        return JsonNode(node, parentNode);
+    }
 
-		if (!node.m_node->contains(key))
-			return false;
+    bool JsonNode::Contains(const std::string& keyPath) const
+    {
+        if (keyPath.empty() || !IsValid())
+            return false;
 
-		node.m_node->erase(key);
-		return true;
-	}
+        JsonNode node = Child(keyPath);
+        return node.IsValid();
+    }
 
-	JsonNode JsonNode::AddObjectField(const std::string& keyPath) {
-		return AddField(keyPath, json::object());
-	}
+    std::string JsonNode::ToString(int indent) const
+    {
+        if (!IsValid())
+            return "{}";
+        return m_node->dump(indent);
+    }
 
-	JsonNode JsonNode::AddArrayField(const std::string& keyPath) {
-		return AddField(keyPath, json::array());
-	}
+    bool JsonNode::Remove(const std::string& keyPath) {
+        if (keyPath.empty())
+            return false;
 
-	bool JsonNode::RemoveArrayElement(const std::string& keyPath, unsigned int index) {
-		if (keyPath.empty())
-			return RemoveArrayElementSelf(index);
+        auto pos = keyPath.find_last_of('.');
+        std::string parentPath = (pos == std::string::npos) ? "" : keyPath.substr(0, pos);
+        std::string key = (pos == std::string::npos) ? keyPath : keyPath.substr(pos + 1);
 
-		JsonNode node = Child(keyPath);
-		if (!node.Exists() || !node.m_node->is_array())
-			return false;
+        JsonNode node = Child(parentPath);
+        if (!node.IsValid())
+            return false;
 
-		if (node.m_node->empty())
-			return false;
+        if (!node.m_node->contains(key))
+            return false;
 
-		if (node.m_node->size() <= index)
-			return false;
-		node.m_node->erase(node.m_node->begin() + index);
-		return true;
+        node.m_node->erase(key);
+        return true;
+    }
 
-	}
+    bool JsonNode::RemoveSelf(const std::string& name)
+    {
+        if (name.empty()) {
 
-	bool JsonNode::RemoveArrayElementSelf(unsigned int index) {
-		if (!Exists() || !m_node->is_array())
-			return false;
+            if (m_parentNode == nullptr)
+            {
+                if (IsValid()) {
+                    m_node->clear();
+                    return true;
+                }
+                return false;
+            }
 
-		if (m_node->empty())
-			return false;
+            return false;
+        }
 
-		if (m_node->size() <= index)
-			return false;
-		m_node->erase(m_node->begin() + index);
-		return true;
-	}
+        if (!m_parentNode->contains(name))
+            return false;
 
-	bool JsonNode::ClearArrayField(const std::string& keyPath) {
-		if (keyPath.empty())
-			return ClearArrayFieldSelf();
+        m_parentNode->erase(name);
+        return true;
+    }
 
-		JsonNode node = Child(keyPath);
-		if (!node.Exists() || !node.m_node->is_array())
-			return false;
+    std::vector<std::string> JsonNode::GetObjectKeys(const std::string& keyPath) const
+    {
+        if (keyPath.empty())
+            return GetObjectKeys();
 
-		node.m_node->clear();
-		return true;
-	}
+        JsonNode node = Child(keyPath);
+        return node.GetObjectKeys();
+    }
 
-	bool JsonNode::ClearArrayFieldSelf() {
-		if (!Exists() || !m_node->is_array())
-			return false;
+    std::vector<std::string> JsonNode::GetObjectKeys() const
+    {
+        std::vector<std::string> keys;
+        if (IsValid() && IsObject()) {
+            for (auto& [key, value] : m_node->items()) {
+                keys.push_back(key);
+            }
+        }
+        return keys;
+    }
 
-		m_node->clear();
-		return true;
-	}
+    bool JsonNode::HasKey(const std::string& keyPath, const std::string& key) const
+    {
+        if (keyPath.empty())
+            return HasKey(key);
+
+        JsonNode node = Child(keyPath);
+        return node.HasKey(key);
+    }
+
+    bool JsonNode::HasKey(const std::string& key) const
+    {
+        return IsValid() && IsObject() && m_node->contains(key);
+    }
+
+    JsonNode JsonNode::CreateObjectField(const std::string& keyPath) {
+        return CreateField(keyPath, json::object());
+    }
+
+    JsonNode JsonNode::CreateArrayField(const std::string& keyPath) {
+        return CreateField(keyPath, json::array());
+    }
+
+    bool JsonNode::RemoveArrayElement(const std::string& keyPath, unsigned int index) {
+        if (keyPath.empty())
+            return RemoveArrayElement(index);
+
+        JsonNode node = Child(keyPath);
+        if (!node.IsArray())
+            return false;
+
+        unsigned int size = node.Size();
+        if (size == 0 || size <= index)
+            return false;
+        node.m_node->erase(node.m_node->begin() + index);
+        return true;
+    }
+
+    bool JsonNode::RemoveArrayElement(unsigned int index) {
+        if (!IsArray())
+            return false;
+
+        unsigned int size = Size();
+        if (size == 0 || size <= index)
+            return false;
+        m_node->erase(m_node->begin() + index);
+        return true;
+    }
+
+    bool JsonNode::ClearArray(const std::string& keyPath) {
+        if (keyPath.empty())
+            return ClearArray();
+
+        JsonNode node = Child(keyPath);
+        if (!node.IsArray())
+            return false;
+
+        node.m_node->clear();
+        return true;
+    }
+
+    bool JsonNode::ClearArray() {
+        if (!IsArray())
+            return false;
+
+        m_node->clear();
+        return true;
+    }
 
 #pragma endregion
 
-	
+
+#pragma region JsonData
+
+    bool JsonData::ToFile(const std::filesystem::path& filePath, int indent)
+    {
+        return Json::WriteToFileFromData(filePath, *this, indent);
+    }
+
+#pragma endregion
 }

@@ -7,6 +7,16 @@
 #include "Interfaces/Editor/HierarchyInterface.h"
 #include "Interfaces/Editor/SceneInterface.h"
 #include "Interfaces/Editor/EditorMenuInterface.h"
+#include "Interfaces/Editor/AssetsExplorerInterface.h"
+
+/// Test
+
+#include "Loopie/Core/Math.h"
+#include "Loopie/Components/MeshRenderer.h"
+#include "../LoopieEditor/src/Others/OrbitalCamera.h"
+#include "Loopie/Components/Transform.h"
+
+///
 
 namespace Loopie {
 	class EditorModule : public Module {
@@ -16,6 +26,9 @@ namespace Loopie {
 
 		void OnLoad()override;
 		void OnUnload()override;
+
+		void OnUpdate(float dt) override;
+
 		void OnInterfaceRender()override;
 	private:
 		InspectorInterface m_inspector;
@@ -23,5 +36,16 @@ namespace Loopie {
 		HierarchyInterface m_hierarchy;
 		SceneInterface m_scene;
 		EditorMenuInterface m_mainMenu;
+		AssetsExplorerInterface m_assetsExplorer;
+
+
+		/// Test
+		Scene* scene;
+		OrbitalCamera* camera;
+		std::shared_ptr<Entity> meshContainerEntity;
+
+		const float SPEED = 100.0f;
+		float rotation = 0;
+		///
 	};
 }

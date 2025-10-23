@@ -2,10 +2,11 @@
 
 #include "Loopie/Core/Assert.h"
 #include "Loopie/Core/Log.h"
+#include "Loopie/Render/Renderer.h"
+#include "Loopie/Core/InputEventManager.h"
 
 #include <SDL3/SDL_init.h>
-#include <glad/glad.h>
-
+#include <SDL3/SDL_timer.h>
 
 namespace Loopie {
 	Window::Window()
@@ -14,18 +15,33 @@ namespace Loopie {
 		// PSTODO: Verify if ASSERT works like this
 		ASSERT(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS), "SDL_VIDEO could not initialize! SDL_Error: {0}", SDL_GetError());
 
-		m_window = SDL_CreateWindow("test_window_name", WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT,
+		int width = WINDOW_DEFAULT_WIDTH;
+		int height = WINDOW_DEFAULT_HEIGHT;
+
+		const SDL_DisplayMode* display = SDL_GetCurrentDisplayMode(1);
+		if (display) {
+			if (display->w < WINDOW_DEFAULT_WIDTH || display->h < WINDOW_DEFAULT_HEIGHT) {
+				width = WINDOW_SMALL_DEFAULT_WIDTH;
+				height = WINDOW_SMALL_DEFAULT_HEIGHT;
+			}
+		}
+
+		m_window = SDL_CreateWindow("test_window_name", width, height,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE /*0*/); // Flags
 
 		// Create OpenGL context
 		m_glContext = SDL_GL_CreateContext(m_window);
 		ASSERT(m_glContext == NULL, "OpenGL context is NULL!");
 
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
 		// Load OpenGL functions via GLAD
-		ASSERT(!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to Initialize GLAD!");
+		Renderer::Init(SDL_GL_GetProcAddress); /// Replace
 		
 		// Set clear color, optional
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+
+		SetVsync(false, true);	
 	}
 
 	Window::~Window()
@@ -40,17 +56,35 @@ namespace Loopie {
 			SDL_DestroyWindow(m_window);
 			m_window = nullptr;
 		}
+
+		Renderer::Shutdown();
+	}
+
+	void Window::StartFrame() {
+		Uint64 now = SDL_GetPerformanceCounter();
+		if (m_lastFrameTime != 0)
+		{
+			m_deltaTimeMs = (float)((now - m_lastFrameTime) * 1000.0 / (double)SDL_GetPerformanceFrequency());
+		}
+		else
+		{
+			m_deltaTimeMs = 0.0f;
+		}
+		m_lastFrameTime = now;
 	}
 
 	// 24/09 Technically more of a swapbuffer rather than an update right now
-	bool Window::Update()
+	void Window::Update()
 	{
-
-		bool returnStatus = true;
-
 		SDL_GL_SwapWindow(m_window);
+		LimitFramerate();
+	}
 
-		return returnStatus;
+	void Window::ProcessEvents(InputEventManager& eventController) {
+		if (eventController.HasEvent(SDL_EVENT_WINDOW_RESIZED)) {
+			ivec2 windowSize = GetSize();
+			Renderer::SetViewport(0, 0, windowSize.x, windowSize.y);
+		}
 	}
 
 	ivec2 Window::GetSize() const /// Change To vector when posible (glm)
@@ -127,6 +161,19 @@ namespace Loopie {
 		SDL_SetWindowResizable(m_window, enable); // returns bool
 	}
 
+	void Window::SetVsync(bool enable, bool forceCall)
+	{
+		if (!forceCall && enable == m_vsyncState)
+			return;
+		ASSERT(!SDL_GL_SetSwapInterval(enable), "Error setting vsync! SDL Error: {0}", SDL_GetError());
+		m_vsyncState = enable;
+	}
+
+	void Window::SetFramerateLimit(int fps)
+	{
+		m_targetFramerate = fps;
+	}
+
 	void Window::SetTitle(const char* title)
 	{
 		SDL_SetWindowTitle(m_window, title); // returns bool
@@ -136,12 +183,29 @@ namespace Loopie {
 	{
 		SDL_SetWindowPosition(m_window, x, y); // returns bool
 	}
-
-	void Window::ClearWindow()
+	float Window::GetDeltaTimeMs()
 	{
-		glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		return m_deltaTimeMs;
 	}
+	float Window::GetDeltaTime()
+	{
+		return m_deltaTimeMs/1000.0f;
+	}
+	void Window::LimitFramerate()
+	{
+		if (m_vsyncState || m_targetFramerate <= 0)
+			return;
+		Uint64 now = SDL_GetPerformanceCounter();
 
+		double freq = (double)(SDL_GetPerformanceFrequency());
+		double frameTimeMs = (now - m_lastFrameTime) * 1000.0 / freq;
+		double targetFrameMs = 1000.0 / m_targetFramerate;
+
+		if (frameTimeMs < targetFrameMs)
+		{
+			Uint32 delayMs = (Uint32)(targetFrameMs - frameTimeMs);
+			SDL_Delay(delayMs);
+		}
+	}
 }
 

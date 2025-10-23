@@ -2,13 +2,7 @@
 
 #include "Loopie/Core/Assert.h"
 #include "Loopie/Core/Log.h"
-
-#include <SDL3/SDL_init.h> // TEMP INCLUDE FOR POLLING EVENTS
-#include <SDL3/SDL.h>// TEMP INCLUDE FOR POLLING EVENTS
-#include <imgui.h>// TEMP INCLUDE FOR POLLING EVENTS
-
-
-#include "Loopie/Files/FileDialog.h"
+#include "Loopie/Render/Renderer.h"
 
 namespace Loopie {
 	Application* Application::s_Instance = nullptr;
@@ -77,9 +71,9 @@ namespace Loopie {
 		return *s_Instance;
 	}
 
-	Window* Application::GetWindow() const
+	Window& Application::GetWindow()
 	{
-		return m_window;
+		return *m_window;
 	}
 
 	InputEventManager& Application::GetInputEvent()
@@ -87,76 +81,71 @@ namespace Loopie {
 		return m_inputEvent;
 	}
 
+	Scene& Application::GetScene()
+	{
+		return *m_scene;
+	}
+
 	void Application::Run()
 	{
 		while (m_running)
 		{
 
-			m_window->ClearWindow(); ///Test -> this should be moved to a RenderClass in the future
-			
+			Renderer::Clear();
+
+			m_window->StartFrame();
 			m_imguiManager.StartFrame();
 
 			m_inputEvent.Update();
-			ProcessEvents();
 
+			m_window->ProcessEvents(m_inputEvent);
+			ProcessEvents(m_inputEvent);
+
+			float dt = m_window->GetDeltaTime();
 			for (Module* module : m_modules) {
 				if (module->IsActive()) {
-					module->OnUpdate();
+					module->OnUpdate(dt);
 				}
 			}
-			for (Module* module : m_modules) {
-				if (module->IsActive()) {
-					module->OnInterfaceRender();
+
+			if(m_renderInterface){
+				for (Module* module : m_modules) {
+					if (module->IsActive()) {
+						module->OnInterfaceRender();
+					}
 				}
 			}
+
 			m_imguiManager.EndFrame();
 
 			m_window->Update();		
 		}
 	}
 
-	void Application::ProcessEvents()
+	void Application::CreateScene(const std::string& filePath)
 	{
-		if (m_inputEvent.HasEvent(SDL_EVENT_QUIT))
+		m_scene = new Scene(filePath);
+	}
+
+	void Application::LoadScene(const std::string& filePath)
+	{
+		delete m_scene;
+		m_scene = new Scene(filePath);
+	}
+
+	void Application::ProcessEvents(InputEventManager& eventController)
+	{
+		if (eventController.HasEvent(SDL_EVENT_QUIT))
 		{
 			Close();
 			return;
 		}
-
-		if (m_inputEvent.HasEvent(SDL_EVENT_KEY_DOWN)) {
-			if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F1) == KeyState::DOWN)
-			{
-				m_window->GetSize().y, m_window->GetPosition().x, m_window->GetPosition().y, m_window->IsFullscreen();
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F2) == KeyState::DOWN)
+		if (eventController.HasEvent(SDL_EVENT_KEY_DOWN)) {
+			if (eventController.GetKeyStatus(SDL_SCANCODE_F11) == KeyState::DOWN)
 			{
 				m_window->SetWindowFullscreen(!m_window->IsFullscreen());
 			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F3) == KeyState::DOWN)
-			{
-				m_window->SetResizable(true);
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F4) == KeyState::DOWN)
-			{
-				m_window->SetResizable(false);
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F5) == KeyState::DOWN)
-			{
-				m_window->SetTitle("Loopie!");
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F6) == KeyState::DOWN)
-			{
-				m_window->SetPosition(10, 10);
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F7) == KeyState::DOWN)
-			{
-				m_window->SetWindowSize(1280, 720);
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_F8) == KeyState::DOWN)
-			{
-				m_window->SetWindowSize(1280, 720, true);
-			}
-			else if (m_inputEvent.GetKeyStatus(SDL_SCANCODE_ESCAPE) == KeyState::DOWN)
+			else if (eventController.GetKeyStatus(SDL_SCANCODE_ESCAPE) == KeyState::DOWN)
 			{
 				Close();
 			}

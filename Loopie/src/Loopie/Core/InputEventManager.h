@@ -27,14 +27,30 @@ namespace Loopie {
 		KeyState GetGamepadButtonStatus(SDL_GamepadButton controlCode) const;
 		KeyState GetMouseButtonStatus(int mouseIndex) const;
 
+		bool AnyKeyDown() const { return  anyKey; }
+		bool AnyButtonDown() const { return anyButton; }
+		bool AnyMouseButtonDown() const { return anyMouseButton; }
+		bool AnyDown() const { return any; }
+
 		const vec2& GetMousePosition() const;
+		const vec2& GetMouseDelta() const;
+		const vec2& GetScrollDelta() const;
 		vec2 GetLeftAxis() const;
 		vec2 GetRightAxis() const;
 
 		float GetLeftTrigger() const;
 		float GetRightTrigger() const;
 
+		std::vector<const char*> GetDroppedFiles();
+		const char* GetDroppedFile(int index);
+		bool HasFileBeenDropped() const;
+
 		void SetAxisDeadzone(float value) { m_axisDeadZone = value; }
+
+		void SetMouseCaptured(bool capture);
+
+		bool IsMouseCaptured() const;
+
 		
 	private:
 
@@ -66,9 +82,18 @@ namespace Loopie {
 		std::array<float, SDL_GAMEPAD_AXIS_COUNT> m_axes;
 		std::array<KeyState, 5> m_mouse;
 
-		vec2 m_mousePosition;
+		bool anyKey=false;
+		bool anyButton = false;
+		bool anyMouseButton = false;
+		bool any = false;
+
+		vec2 m_mousePosition = { 0.0f, 0.0f };
+		vec2 m_mouseDelta = { 0.0f, 0.0f };
+		vec2 m_scrollDelta = { 0.0f, 0.0f };
 
 		float m_axisDeadZone = 0.15f;
+
+		std::vector<const char*> m_droppedFiles;
 
 		SDL_Gamepad* gamepad = nullptr;
 	};
