@@ -15,6 +15,12 @@ namespace Loopie {
 		REPEAT
 	};
 
+	enum class KeyModifier {
+		SHIFT,
+		CTRL,
+		ALT
+	};
+
 	class InputEventManager {
 	public:
 		InputEventManager();
@@ -24,6 +30,7 @@ namespace Loopie {
 		bool HasEvent(SDL_EventType eventType) const { return m_events[eventType]; }
 
 		KeyState GetKeyStatus(SDL_Scancode keyCode) const;
+		bool GetKeyWithModifier(SDL_Scancode keyCode, KeyModifier modifier) const;
 		KeyState GetGamepadButtonStatus(SDL_GamepadButton controlCode) const;
 		KeyState GetMouseButtonStatus(int mouseIndex) const;
 

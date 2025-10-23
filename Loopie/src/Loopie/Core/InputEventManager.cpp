@@ -147,6 +147,40 @@ namespace Loopie {
 		return m_keyboard[keyCode];
 	}
 
+	bool InputEventManager::GetKeyWithModifier(SDL_Scancode keyCode, KeyModifier modifier) const
+	{
+		if (m_keyboard[keyCode] != KeyState::DOWN)
+			return false;
+
+		unsigned int leftKey = 0;
+		unsigned int rightKey = 0;
+		bool leftModifier = false;
+		bool rightModifier = false;
+
+		switch (modifier)
+		{
+			case Loopie::KeyModifier::SHIFT:
+				leftKey = SDL_SCANCODE_LSHIFT;
+				rightKey = SDL_SCANCODE_RSHIFT;
+				break;
+			case Loopie::KeyModifier::CTRL:
+				leftKey = SDL_SCANCODE_LCTRL;
+				rightKey = SDL_SCANCODE_RCTRL;
+				break;
+			case Loopie::KeyModifier::ALT:
+				leftKey = SDL_SCANCODE_LALT;
+				rightKey = SDL_SCANCODE_RALT;
+				break;
+			default:
+				return false;
+		}
+
+		leftModifier = m_keyboard[leftKey] == KeyState::DOWN || m_keyboard[leftKey] == KeyState::REPEAT;
+		rightModifier = m_keyboard[rightKey] == KeyState::DOWN || m_keyboard[rightKey] == KeyState::REPEAT;
+
+		return leftModifier || rightModifier;
+	}
+
 	KeyState InputEventManager::GetGamepadButtonStatus(SDL_GamepadButton controlCode) const
 	{		
 		return m_gamepad[controlCode];

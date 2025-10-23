@@ -86,6 +86,8 @@ namespace Loopie {
 
 		}
 		ImGui::End();
+
+
 	}
 
 	void AssetsExplorerInterface::GoToDirectory(const std::filesystem::path& directory, bool removeSearch)
