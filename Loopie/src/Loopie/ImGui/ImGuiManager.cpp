@@ -211,7 +211,7 @@ namespace Loopie {
 		colors[ImGuiCol_TableRowBgAlt] = ImVec4(white.x, white.y, white.z, 0.06f);
 
 		// Drag & Drop Colors
-		colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f); // Yellow highlight
+		colors[ImGuiCol_DragDropTarget] = white; // Yellow highlight
 
 		// Navigation Colors
 		colors[ImGuiCol_NavCursor] = accent;

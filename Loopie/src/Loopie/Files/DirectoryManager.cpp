@@ -43,6 +43,15 @@ namespace Loopie {
     {
         if (!Contains(from))
             return false;
+        if (from == to)
+            return false;
+        if (std::filesystem::is_directory(from))
+        {
+            auto relative = std::filesystem::relative(to, from);
+            if (!relative.empty() && relative.native()[0] != '.')
+                return false;
+        }
+
         std::filesystem::rename(from, to);
         return true;
     }
@@ -51,6 +60,15 @@ namespace Loopie {
     {
         if (!Contains(fileToCopy))
             return false;
+        if (fileToCopy == to)
+            return false;
+        if (std::filesystem::is_directory(fileToCopy))
+        {
+            auto relative = std::filesystem::relative(to, fileToCopy);
+            if (!relative.empty() && relative.native()[0] != '.')
+                return false;
+        }
+
         std::filesystem::copy(fileToCopy, to, std::filesystem::copy_options::overwrite_existing);
         return true;
     }
