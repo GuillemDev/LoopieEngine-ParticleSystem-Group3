@@ -4,17 +4,43 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <regex>
 
 typedef unsigned int GLuint;
 typedef int GLint;
 typedef unsigned int GLenum;
 
 // Things left to work on for this module: 
-// - The shader file may have more than the vertex and fragment information. Geometry might
-//   be added. In which case, that information should be able to be parsed and compiled as well.
-// - Check how the 'file.shader' will be structured. Right now the order has to be 
-//   [vertex] and then [fragment]. We will need to change that in the future.
+// - The shader file may have more than the vertex, fragment and geometry information. 
+//   If others are added, that information should be able to be parsed and compiled as well.
 // - Verify if we actually need to cache the attributes, version and uniforms.
+// - Verify if we need array support for uniformTypes.
+
+enum UniformType
+{
+	UniformType_float,
+	UniformType_int,
+	UniformType_uint,
+	UniformType_bool,
+	UniformType_vec2,
+	UniformType_vec3,
+	UniformType_vec4,
+	UniformType_mat2,
+	UniformType_mat3,
+	UniformType_mat4,
+	UniformType_Sampler2D, // treated as int
+	UniformType_Sampler3D, // treated as int
+	UniformType_SamplerCube, // treated as int?
+
+	UniformType_Unknown
+};
+
+struct Uniform
+{
+	std::string id;
+	UniformType type;
+};
+
 
 namespace Loopie {
 	class Shader
@@ -28,11 +54,12 @@ namespace Loopie {
 		void Unbind() const;
 		// Constructor and Reload do similar things, might be a good thing to 
 		// put them together in a helper function 
-		bool Reload(); // Recompiles from the source path currently set
+		bool Reload(const char* sourcePath = nullptr); // Recompiles from the source path currently set
 
 		// Add more if needed: https://registry.khronos.org/OpenGL-Refpages/gl4/html/glUniform.xhtml
 		void SetUniformInt(const std::string& name, int value);
 		void SetUniformFloat(const std::string& name, float value);
+		void SetUniformMat2(const std::string& name, const Loopie::matrix2& matrix);
 		void SetUniformMat3(const std::string& name, const Loopie::matrix3& matrix);
 		void SetUniformMat4(const std::string& name, const Loopie::matrix4& matrix);
 		void SetUniformVec2(const std::string& name, const Loopie::vec2& vector);
@@ -44,35 +71,41 @@ namespace Loopie {
 		GLint GetUniformLocation(const std::string& name);
 		bool GetIsValidShader() const;
 		bool GetIsBound() const;
-		// Vertex and Fragment shader version be different, although they will generally match
+		// Vertex and Fragment shader version be different, although they will generally match.
 		// https://stackoverflow.com/questions/30943346/should-vertex-and-fragment-shader-versions-always-match
-		// Maybe keeping two is overkill
-		const std::string& GetVertexVersion() const;
-		const std::string& GetFragmentVersion() const;
+		const std::string& GetShaderVersion() const;
 		const std::string& GetVertexSource() const;
 		const std::string& GetFragmentSource() const;
+		const std::string& GetGeometrySource() const;
 		const std::string& GetFilePath() const;
 		const std::vector<std::string>& GetActiveUniforms() const;
 		const std::vector<std::string>& GetActiveAttributes() const;
+		const std::vector<Uniform>& GetUniforms() const;
 
 		// Setters
 		void SetPath(const std::string& path);
 
 	private:
+		// Helper function to avoid redundant code
+		bool ParseCompileLinkShader(const char* sourcePath, GLuint& programID);
 		GLuint CompileShader(GLenum shaderType, const char* sourcePath);
 
 		// OpenGL is silent about shaders failing, which is why I created this function
 		bool CheckCompileErrors(GLuint shader, const std::string& type);
 
-		// Parser GLSL to Shader variables
+		// Parse GLSL's version of shader string file
 		std::string ParseGLSLVersion(const std::string& source);
-
-		// This expects a file with [vertex] first then [fragment]
 		bool ParseShaderSourcePath(const std::string& filePath);
+		void GetUniformsGL();
+		//void ExtractUniforms(const std::string& parsedShader, const std::unordered_map<std::string, 
+							 //UniformType>& typeMap, const std::regex& uniformRegex);
 		bool CheckIfShaderIsBoundAndWarn();
+
+
 
 	private:
 		GLuint m_rendererID = 0;
+		std::vector<Uniform> m_uniforms;
 		std::unordered_map<std::string, GLint> m_uniformLocationCache;
 		mutable std::vector<std::string> m_activeUniformsCache;
 		mutable std::vector<std::string> m_activeAttributesCache;
@@ -80,14 +113,13 @@ namespace Loopie {
 		mutable bool m_attributesCached = false;
 
 		std::string m_filePath;
+		std::string m_shaderVersion; 
 
-		// Unsure if these two are necessary instead of a general version
-		std::string m_vertexVersion; 
-		std::string m_fragmentVersion;
-
-		// Keeping sources in case we might want to inspect them later
+		// Keeping sources in case we might want to inspect them later 
+		// delete them once we find everything works as expected
 		std::string m_vertexSource;
 		std::string m_fragmentSource;
+		std::string m_geometrySource;
 
 		bool m_isValidShader = true;
 	};
