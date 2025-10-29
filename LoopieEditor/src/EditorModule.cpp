@@ -11,6 +11,10 @@
 
 #include "Loopie/Core/Math.h"
 #include "Loopie/Resources/AssetRegistry.h"
+
+
+#include "Loopie/Components/MeshRenderer.h"
+#include "Loopie/Components/Transform.h"
 ///
 
 
@@ -26,14 +30,8 @@ namespace Loopie
 		/////SCENE
 		Application::GetInstance().CreateScene(""); /// Maybe default One
 		scene = &Application::GetInstance().GetScene();
-		camera = new OrbitalCamera();
-		camera->GetCamera()->GetTransform()->SetPosition({0,10,50.f});
-
 		meshContainerEntity = scene->CreateEntity("ModelContainer");
 		////
-	
-		ivec2 windowSize = Application::GetInstance().GetWindow().GetSize();
-		camera->GetCamera()->SetViewport(0, 0, windowSize.x, windowSize.y);
 
 		m_assetsExplorer.Init();
 		m_console.Init();
@@ -58,10 +56,6 @@ namespace Loopie
 		Application& app = Application::GetInstance();
 		InputEventManager& inputEvent = app.GetInputEvent();
 
-		if (inputEvent.HasEvent(SDL_EVENT_WINDOW_RESIZED)) {
-			ivec2 windowSize = Application::GetInstance().GetWindow().GetSize();
-			camera->GetCamera()->SetViewport(0, 0, windowSize.x, windowSize.y);
-		}
 		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_I, KeyModifier::CTRL)) {
 			app.SetInterfaceState(!app.IsInterfaceVisible());
 		}
@@ -74,13 +68,12 @@ namespace Loopie
 			DropFile(fileName);
 		}
 
-		camera->ProcessEvent(inputEvent);
-		camera->Update(dt);
-
 		rotation = SPEED * dt;
 		//meshContainerEntity->GetTransform()->Rotate({0,rotation,0}); //// this should Propagete to its childs
 
-		const matrix4& viewProj = camera->GetCamera()->GetViewProjectionMatrix();
+		m_scene.Update(dt, inputEvent);
+		const matrix4& viewProj = m_scene.GetCamera()->GetViewProjectionMatrix();
+		m_scene.StartScene();
 		Renderer::BeginScene(viewProj);
 
 		for (auto& entity : scene->GetAllEntities()) {
@@ -93,6 +86,7 @@ namespace Loopie
 			}
 		}
 		Renderer::EndScene();
+		m_scene.EndScene();
 	}
 
 	void EditorModule::OnInterfaceRender()

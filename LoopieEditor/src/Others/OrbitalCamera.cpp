@@ -19,7 +19,7 @@ namespace Loopie
 
 	}
 
-    void OrbitalCamera::ProcessEvent(InputEventManager& inputEvent)
+    void OrbitalCamera::ProcessEvent(const InputEventManager& inputEvent)
     {
         m_inputDirection = vec3(0);
         m_inputRotation = vec3(0);

@@ -9,15 +9,6 @@
 #include "Interfaces/Editor/EditorMenuInterface.h"
 #include "Interfaces/Editor/AssetsExplorerInterface.h"
 
-/// Test
-
-#include "Loopie/Core/Math.h"
-#include "Loopie/Components/MeshRenderer.h"
-#include "../LoopieEditor/src/Others/OrbitalCamera.h"
-#include "Loopie/Components/Transform.h"
-
-///
-
 namespace Loopie {
 	class EditorModule : public Module {
 	public:
@@ -43,7 +34,7 @@ namespace Loopie {
 		void DropFile(const std::string& file);
 		void CreateBakerHouse();
 		Scene* scene;
-		OrbitalCamera* camera;
+		
 		std::shared_ptr<Entity> meshContainerEntity;
 
 		const float SPEED = 100.0f;
