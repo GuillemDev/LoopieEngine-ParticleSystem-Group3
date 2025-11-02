@@ -1,7 +1,10 @@
 #include "Scene.h"
 #include "Loopie/Components/Transform.h"
+#include "Loopie/Files/Json.h"
+#include "Loopie/Core/Log.h"
 
 #include <unordered_set>
+
 
 namespace Loopie {
 	Scene::Scene(const std::string& filePath)
@@ -17,11 +20,50 @@ namespace Loopie {
 		m_entities.clear();
 	}
 
-	void Scene::SaveScene()
+	void Scene::SaveScene(const std::string* filePath)
 	{
-		// TODO: This should export the scene and its entities 
-		// into a serialized file 
-		// We can use the hierarchy for this
+		JsonData saveData;
+		saveData.CreateArrayField("entities");
+
+		for (const auto& [id, entity] : GetAllEntities())
+		{
+			// Create a standalone JSON object for this entity
+			json entityObj = json::object();
+
+			entityObj["uuid"] = id.Get();
+			entityObj["name"] = entity->GetName();
+
+			if (std::shared_ptr<Entity> parentEntity = entity->GetParent().lock())
+				entityObj["parent_uuid"] = parentEntity->GetUUID().Get();
+			else
+				entityObj["parent_uuid"] = nullptr;
+
+			// Create transform structure
+			Transform* transform = entity->GetTransform();
+
+			entityObj["transform"] = json::object();
+			entityObj["transform"]["position"] = {
+				{"x", transform->GetPosition().x},
+				{"y", transform->GetPosition().y},
+				{"z", transform->GetPosition().z}
+			};
+			entityObj["transform"]["rotation"] = {
+				{"x", transform->GetRotation().x},
+				{"y", transform->GetRotation().y},
+				{"z", transform->GetRotation().z}
+			};
+			entityObj["transform"]["scale"] = {
+				{"x", transform->GetScale().x},
+				{"y", transform->GetScale().y},
+				{"z", transform->GetScale().z}
+			};
+
+			// Add the complete object to the array
+			saveData.AddArrayElement("entities", entityObj);
+		}
+
+		saveData.ToFile("TESTSavedScene.json");
+		Log::Info("Scene saved.");
 	}
 
 	std::shared_ptr<Entity>  Scene::CreateEntity(const std::string& name,

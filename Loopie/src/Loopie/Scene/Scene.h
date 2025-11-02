@@ -14,7 +14,7 @@ namespace Loopie {
 		Scene(const std::string& filePath);
 		~Scene();
 
-		void SaveScene();
+		void SaveScene(const std::string* filePath = nullptr);
 
 		std::shared_ptr<Entity> CreateEntity(const std::string& name = "Entity",
 											 std::shared_ptr<Entity> parentEntity = nullptr);

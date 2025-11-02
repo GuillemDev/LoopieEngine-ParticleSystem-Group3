@@ -38,6 +38,16 @@ namespace Loopie {
 					m_projectName[0] = '\0';
 				}
 
+				if (ImGui::MenuItem("Save [WIP]"))
+				{
+					Application::GetInstance().GetScene().SaveScene();
+				}
+
+				if (ImGui::MenuItem("Save As [WIP]"))
+				{
+					Application::GetInstance().GetScene().SaveScene();
+				}
+
 				if (ImGui::MenuItem("Exit"))
 					Application::GetInstance().Close();
 
