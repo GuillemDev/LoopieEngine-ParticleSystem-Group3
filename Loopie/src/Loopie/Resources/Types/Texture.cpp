@@ -15,6 +15,7 @@ namespace Loopie {
 
 	void Texture::LoadFromFile(const std::string path)
 	{		
+		m_path = path;
 		TextureImporter::LoadImage(path, *this);
 	}
 

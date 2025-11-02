@@ -165,6 +165,10 @@ namespace Loopie {
 
 		if (ImGui::CollapsingHeader("Window")) {
 
+			bool windowFullscreen = window.IsFullscreen();
+			if (ImGui::Checkbox("Fullscreen", &windowFullscreen)) {
+				window.SetWindowFullscreen(windowFullscreen);
+			}
 			bool windowVsync = window.IsVsyncEnabled();
 			if (ImGui::Checkbox("VSync", &windowVsync)) {
 				window.SetVsync(windowVsync);

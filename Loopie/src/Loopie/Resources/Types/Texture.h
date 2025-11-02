@@ -1,5 +1,6 @@
 #pragma once
 #include "Loopie/Resources/Resource.h"
+#include "Loopie/Core/Math.h"
 
 #include "Loopie/Render/TextureBuffer.h"
 
@@ -19,6 +20,8 @@ namespace Loopie {
 
 		void LoadFromFile(const std::string path) override;
 		void Reload() override;
+
+		ivec2 GetSize() { return ivec2(m_width, m_height); }
 
 		int GetRenderId() { return m_tb->GetID(); }
 	private:

@@ -21,6 +21,8 @@ namespace Loopie {
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 
+		io.IniFilename = "assets/imgui.ini";
+
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;

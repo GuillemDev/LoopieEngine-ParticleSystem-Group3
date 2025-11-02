@@ -16,5 +16,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC loopie-core)
 
 
 file(COPY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${OUTPUT_PATH})
-file(COPY ${PROJECT_SOURCE_DIR}/imgui.ini DESTINATION ${OUTPUT_PATH})
+##file(COPY ${PROJECT_SOURCE_DIR}/imgui.ini DESTINATION ${OUTPUT_PATH})
 

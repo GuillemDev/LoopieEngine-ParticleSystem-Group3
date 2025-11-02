@@ -14,7 +14,9 @@ namespace Loopie {
 		virtual void LoadFromFile(const std::string path) = 0;
 		virtual void Reload() = 0;
 
-	private:
+		const std::string& GetPath() { return m_path; }
+	protected:
 		UUID m_uuid;
+		std::string m_path;
 	};
 }

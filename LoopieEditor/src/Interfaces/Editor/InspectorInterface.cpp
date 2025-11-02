@@ -124,6 +124,15 @@ namespace Loopie {
 
 			std::shared_ptr<Material> material = meshRenderer->GetMaterial();
 			const std::unordered_map<std::string, UniformValue> properties = material->GetUniforms();
+
+			std::shared_ptr<Texture> texture = material->GetTexture();
+			if (texture) {
+				ImGui::Text("Path: %s", material->GetTexture()->GetPath().c_str());
+				ivec2 texSize = material->GetTexture()->GetSize();
+				ImGui::Text("Size: %d x %d", texSize.x, texSize.y);		
+				ImGui::Separator();
+			}
+			
 			for (auto& [name, uniform] : properties)
 			{
 
