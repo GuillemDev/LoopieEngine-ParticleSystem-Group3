@@ -30,7 +30,7 @@ namespace Loopie
 		/////SCENE
 		Application::GetInstance().CreateScene(""); /// Maybe default One
 		scene = &Application::GetInstance().GetScene();
-		meshContainerEntity = scene->CreateEntity("ModelContainer");
+		CreateBakerHouse();
 		////
 
 		m_assetsExplorer.Init();
@@ -42,8 +42,6 @@ namespace Loopie
 
 		m_hierarchy.SetScene(scene);
 
-		////TEST
-		CreateBakerHouse();
 	}
 
 	void EditorModule::OnUnload()
@@ -60,26 +58,17 @@ namespace Loopie
 			app.SetInterfaceState(!app.IsInterfaceVisible());
 		}
 		if (inputEvent.HasEvent(SDL_EVENT_WINDOW_FOCUS_GAINED)) {
-			//AssetRegistry::Reload();
+			AssetRegistry::RefreshAssetRegistry();
 		}
-
-		if (inputEvent.HasFileBeenDropped()) { //// Move this to an AssetInspectorClass
-			const char* fileName = inputEvent.GetDroppedFile(0);
-			DropFile(fileName);
-		}
-
-		rotation = SPEED * dt;
-		//meshContainerEntity->GetTransform()->Rotate({0,rotation,0}); //// this should Propagete to its childs
 
 		m_scene.Update(dt, inputEvent);
 		const matrix4& viewProj = m_scene.GetCamera()->GetViewProjectionMatrix();
 		m_scene.StartScene();
 		Renderer::BeginScene(viewProj);
 
-		for (auto& entity : scene->GetAllEntities()) {
-			MeshRenderer* renderer = entity.second->GetComponent<MeshRenderer>();
+		for (auto& [uuid, entity] : scene->GetAllEntities()) {
+			MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
 			if (renderer) {
-				//renderer->GetTransform()->DegreesRotate({ 0,rotation,0 }); //// this should Propagete to its childs
 				renderer->GetMaterial()->GetShader().Bind();
 				renderer->GetMaterial()->GetShader().SetUniformMat4("lp_ViewProjection", viewProj);
 				renderer->Render();
@@ -103,47 +92,7 @@ namespace Loopie
 
 	void EditorModule::CreateBakerHouse()
 	{
-		DropFile("assets/models/BakerHouse.fbx");
-		DropFile("assets/textures/Baker_house.png");
-	}
-
-	void EditorModule::DropFile(const std::string& file) {
-
-		Metadata& meta = AssetRegistry::GetOrCreateMetadata(file);
-
-		if (MeshImporter::CheckIfIsModel(file.c_str())) {
-			MeshImporter::ImportModel(file, meta);
-			for (size_t i = 0; i < meta.CachesPath.size(); i++)
-			{
-				std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(meta.UUID, i);
-
-				if (mesh) {
-					std::shared_ptr<Entity> newEntity = scene->CreateEntity("ModelEntity", meshContainerEntity);
-					MeshRenderer* renderer = newEntity->AddComponent<MeshRenderer>();
-					renderer->SetMesh(mesh);
-				}
-			}
-		}
-		else if (TextureImporter::CheckIfIsImage(file.c_str())) {
-			TextureImporter::ImportImage(file, meta);
-			std::shared_ptr<Texture> texture = std::make_shared<Texture>(meta.UUID);
-			if (texture) {
-				if (m_hierarchy.s_SelectedEntity != nullptr) {
-					MeshRenderer* renderer = m_hierarchy.s_SelectedEntity->GetComponent<MeshRenderer>();
-					if (renderer) {
-						renderer->GetMaterial()->SetTexture(texture);
-					}
-				}
-				else {
-					for (const auto& entity : meshContainerEntity->GetChildren())
-					{
-						MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
-						if (renderer) {
-							renderer->GetMaterial()->SetTexture(texture);
-						}
-					}
-				}
-			}
-		}
-	}
+		m_scene.ChargeModel("assets/models/BakerHouse.fbx");
+		m_scene.ChargeTexture("assets/textures/Baker_house.png");
+	}	
 }

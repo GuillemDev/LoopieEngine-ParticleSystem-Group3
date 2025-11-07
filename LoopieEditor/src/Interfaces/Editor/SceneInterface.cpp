@@ -2,8 +2,15 @@
 
 #include "Loopie/Core/Log.h"
 #include "Loopie/Core/Application.h"
-#include "Loopie/REnder/Renderer.h"
+#include "Loopie/Render/Renderer.h"
 #include "Loopie/Components/Transform.h"
+
+#include "Loopie/Resources/AssetRegistry.h"
+#include "Loopie/Importers/MeshImporter.h"
+#include "Loopie/Importers/TextureImporter.h"
+#include "Loopie/Components/MeshRenderer.h"
+
+#include "src/Interfaces/Editor/HierarchyInterface.h"
 
 #include <imgui.h>
 
@@ -16,10 +23,12 @@ namespace Loopie {
 
 	void SceneInterface::Update(float dt, const InputEventManager& inputEvent)
 	{
+		
 		if (!m_focused && !m_interacted)
 			return;
 		m_camera->ProcessEvent(inputEvent);
 		m_camera->Update(dt);
+
 	}
 
 	void SceneInterface::Render() {
@@ -35,6 +44,8 @@ namespace Loopie {
 
 			ImGui::Image((ImTextureID)m_buffer->GetTextureId(), m_windowSize, ImVec2(0,1), ImVec2(1,0));
 		}
+
+		Drop();
 		ImGui::End();
 	}
 
@@ -55,5 +66,69 @@ namespace Loopie {
 	void SceneInterface::EndScene()
 	{
 		m_buffer->Unbind();
+	}
+
+	void SceneInterface::Drop()
+	{
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_EXPLORER_FILE"))
+			{
+				std::string path = (const char*)payload->Data;
+				if (TextureImporter::CheckIfIsImage(path.c_str())) {
+					ChargeTexture(path);
+				}
+				else if (MeshImporter::CheckIfIsModel(path.c_str())) {
+					ChargeModel(path);
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
+	void SceneInterface::ChargeModel(const std::string& modelPath)
+	{
+		Metadata& meta = AssetRegistry::GetOrCreateMetadata(modelPath);
+		MeshImporter::ImportModel(modelPath, meta);
+		std::shared_ptr<Entity> parent;
+
+		for (size_t i = 0; i < meta.CachesPath.size(); i++)
+		{
+			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(meta.UUID, i);
+
+			if (mesh) {
+				std::shared_ptr<Entity> newEntity;
+				if (!parent) {
+					newEntity = Application::GetInstance().GetScene().CreateEntity("ModelEntity",HierarchyInterface::s_SelectedEntity);
+					parent = newEntity;
+				}else
+					newEntity = Application::GetInstance().GetScene().CreateEntity("ModelEntity", parent);
+				MeshRenderer* renderer = newEntity->AddComponent<MeshRenderer>();
+				renderer->SetMesh(mesh);
+			}
+		}
+	}
+	void SceneInterface::ChargeTexture(const std::string& texturePath)
+	{
+		Metadata& meta = AssetRegistry::GetOrCreateMetadata(texturePath);
+
+		TextureImporter::ImportImage(texturePath, meta);
+		std::shared_ptr<Texture> texture = std::make_shared<Texture>(meta.UUID);
+		if (texture) {
+			if (HierarchyInterface::s_SelectedEntity != nullptr) {
+				MeshRenderer* renderer = HierarchyInterface::s_SelectedEntity->GetComponent<MeshRenderer>();
+				if (renderer) {
+					renderer->GetMaterial()->SetTexture(texture);
+				}
+			}
+			else {
+				for (const auto& [uuid, entity] : Application::GetInstance().GetScene().GetAllEntities())
+				{
+					MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
+					if (renderer) {
+						renderer->GetMaterial()->SetTexture(texture);
+					}
+				}
+			}
+		}
 	}
 }

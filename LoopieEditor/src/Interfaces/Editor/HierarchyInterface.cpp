@@ -20,6 +20,11 @@ namespace Loopie {
 				ImGui::End();
 				return;
 			}
+
+			if (ImGui::IsWindowHovered() && (ImGui::IsMouseClicked(ImGuiMouseButton_Left) || ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)))
+				SelectEntity(nullptr);
+
+
 			for (const auto& entity : m_scene->GetRootEntity()->GetChildren())
 			{
 				DrawEntitySlot(entity);
@@ -37,6 +42,11 @@ namespace Loopie {
 	void HierarchyInterface::SetScene(Scene* scene)
 	{
 		m_scene = scene;
+	}
+
+	void HierarchyInterface::SelectEntity(std::shared_ptr<Entity> entity)
+	{
+		s_SelectedEntity = entity;
 	}
 
 	void HierarchyInterface::DrawEntitySlot(const std::shared_ptr<Entity>& entity)
@@ -57,7 +67,7 @@ namespace Loopie {
 		if (ImGui::IsItemClicked())
 		{
 			////Expand To Select Multiple
-			s_SelectedEntity = entity;
+			SelectEntity(entity);
 		}
 
 		if (ImGui::BeginPopupContextItem())
@@ -84,7 +94,7 @@ namespace Loopie {
 		if (ImGui::MenuItem("Create Empty"))
 		{
 			std::shared_ptr<Entity> newEntity = m_scene->CreateEntity("Entity", entity);
-			s_SelectedEntity = newEntity;
+			SelectEntity(newEntity);
 		}	
 
 		/*if (ImGui::MenuItem("Copy"))
@@ -105,7 +115,7 @@ namespace Loopie {
 		if (ImGui::MenuItem("Delete",nullptr, false, entity != nullptr))
 		{
 			if (s_SelectedEntity == entity)
-				s_SelectedEntity = nullptr;
+				SelectEntity(nullptr);
 			m_scene->RemoveEntity(entity->GetUUID());
 		}
 
@@ -114,16 +124,16 @@ namespace Loopie {
 		if (ImGui::BeginMenu("3D Object"))
 		{
 			if (ImGui::MenuItem("Cube"))
-				s_SelectedEntity = CreatePrimitiveModel("assets/models/primitives/cube.fbx", "Cube", entity);
+				SelectEntity(CreatePrimitiveModel("assets/models/primitives/cube.fbx", "Cube", entity));
 
 			if (ImGui::MenuItem("Sphere"))
-				s_SelectedEntity = CreatePrimitiveModel("assets/models/primitives/sphere.fbx", "Sphere", entity);
+				SelectEntity(CreatePrimitiveModel("assets/models/primitives/sphere.fbx", "Sphere", entity));
 
 			if (ImGui::MenuItem("Cylinder"))
-				s_SelectedEntity = CreatePrimitiveModel("assets/models/primitives/cylinder.fbx", "Cylinder", entity);
+				SelectEntity(CreatePrimitiveModel("assets/models/primitives/cylinder.fbx", "Cylinder", entity));
 
 			if (ImGui::MenuItem("Plane"))
-				s_SelectedEntity = CreatePrimitiveModel("assets/models/primitives/plane.fbx", "Plane", entity);
+				SelectEntity(CreatePrimitiveModel("assets/models/primitives/plane.fbx", "Plane", entity));
 
 			ImGui::EndMenu();
 		}
@@ -139,7 +149,7 @@ namespace Loopie {
 
 		if (input.GetKeyStatus(SDL_SCANCODE_DELETE) == KeyState::DOWN) {
 			m_scene->RemoveEntity(s_SelectedEntity->GetUUID());
-			s_SelectedEntity = nullptr;
+			SelectEntity(nullptr);
 		}
 
 		if (input.GetKeyWithModifier(SDL_SCANCODE_C, KeyModifier::CTRL)) {

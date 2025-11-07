@@ -31,11 +31,8 @@ namespace Loopie {
 
 
 		/// Test
-		void DropFile(const std::string& file);
 		void CreateBakerHouse();
 		Scene* scene;
-		
-		std::shared_ptr<Entity> meshContainerEntity;
 
 		const float SPEED = 100.0f;
 		float rotation = 0;

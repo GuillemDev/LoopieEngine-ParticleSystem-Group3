@@ -33,8 +33,8 @@ namespace Loopie {
 		}
 		
 		m_fileIcon = std::make_shared<Texture>(AssetRegistry::GetMetadata(iconsToLoad[0])->UUID);
-		m_folderIcon = std::make_shared<Texture>(AssetRegistry::GetMetadata(iconsToLoad[1])->UUID);
-		m_emptyFolderIcon = std::make_shared<Texture>(AssetRegistry::GetMetadata(iconsToLoad[2])->UUID);
+		m_emptyFolderIcon = std::make_shared<Texture>(AssetRegistry::GetMetadata(iconsToLoad[1])->UUID);
+		m_folderIcon = std::make_shared<Texture>(AssetRegistry::GetMetadata(iconsToLoad[2])->UUID);
 
 		const Project& project = Application::GetInstance().m_activeProject;
 		GoToDirectory(project.GetAssetsPath());
@@ -116,7 +116,7 @@ namespace Loopie {
 			DirectoryManager::Copy(droppedPath, targetPath);
 		}
 
-		//AssetRegistry::Reload();
+		AssetRegistry::RefreshAssetRegistry();
 	}
 
 	void AssetsExplorerInterface::GoToDirectory(const std::filesystem::path& directory, bool removeSearch)
@@ -408,8 +408,9 @@ namespace Loopie {
 				}
 
 				DirectoryManager::Move(fromPath, newPath);
+				DirectoryManager::Move(fromPath += ".meta", newPath += ".meta");
 
-				//AssetRegistry::Reload();
+				AssetRegistry::RefreshAssetRegistry();
 			}
 			ImGui::EndDragDropTarget();
 		}
