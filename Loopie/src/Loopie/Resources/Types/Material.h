@@ -45,7 +45,6 @@ namespace Loopie
 	private:
 		Shader m_shader = Shader("assets/shaders/DefaultShader.shader");
 		std::shared_ptr<Texture> m_texture;
-		std::shared_ptr<Texture> m_defaultTexture;
 		// The idea behind uniforms is to retrieve them from shader and being able to 
 		// adjust them for different textures (maybe we want a variable of type roughness
 		// to be different for all different kinds of textures, which can be changed like this)
