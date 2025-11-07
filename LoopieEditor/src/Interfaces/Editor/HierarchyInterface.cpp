@@ -13,6 +13,11 @@ namespace Loopie {
 		
 	}
 
+	void HierarchyInterface::Update(float dt, const InputEventManager& inputEvent)
+	{
+		HotKeysSelectedEntiy(inputEvent);
+	}
+
 	void HierarchyInterface::Render() {
 
 		if (ImGui::Begin("Hierarchy")) {
@@ -34,7 +39,6 @@ namespace Loopie {
 				DrawContextMenu(nullptr);
 				ImGui::EndPopup();
 			}
-			HotKeysSelectedEntiy();
 		}
 		ImGui::End();
 	}
@@ -139,28 +143,26 @@ namespace Loopie {
 		}
 	}
 
-	void HierarchyInterface::HotKeysSelectedEntiy()
+	void HierarchyInterface::HotKeysSelectedEntiy(const InputEventManager& inputEvent)
 	{
 		if (!s_SelectedEntity) {
 			return;
 		}
 
-		const InputEventManager& input = Application::GetInstance().GetInputEvent();
-
-		if (input.GetKeyStatus(SDL_SCANCODE_DELETE) == KeyState::DOWN) {
+		if (inputEvent.GetKeyStatus(SDL_SCANCODE_DELETE) == KeyState::DOWN) {
 			m_scene->RemoveEntity(s_SelectedEntity->GetUUID());
 			SelectEntity(nullptr);
 		}
 
-		if (input.GetKeyWithModifier(SDL_SCANCODE_C, KeyModifier::CTRL)) {
+		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_C, KeyModifier::CTRL)) {
 			/// Copy
 		}
 
-		if (input.GetKeyWithModifier(SDL_SCANCODE_V, KeyModifier::CTRL)) {
+		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_V, KeyModifier::CTRL)) {
 			/// Paste
 		}
 
-		if (input.GetKeyWithModifier(SDL_SCANCODE_X, KeyModifier::CTRL)) {
+		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_X, KeyModifier::CTRL)) {
 			/// Cut
 		}
 

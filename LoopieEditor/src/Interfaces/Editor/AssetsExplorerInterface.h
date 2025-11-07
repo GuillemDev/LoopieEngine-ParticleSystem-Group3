@@ -20,6 +20,7 @@ namespace Loopie {
 		void Render() override;
 
 	private:
+		void HotKeysControls(const InputEventManager& inputEvent);
 
 		void GetExternalFile();
 		void GoToDirectory(const std::filesystem::path& directory, bool removeSearch = true);

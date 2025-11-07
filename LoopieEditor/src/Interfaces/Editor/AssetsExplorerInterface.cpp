@@ -47,9 +47,12 @@ namespace Loopie {
 			for (size_t i = 0; i < files.size(); i++)
 			{
 				std::filesystem::path path = files[i];
-				DirectoryManager::Move(path, m_currentDirectory/path.filename());
+				DirectoryManager::Copy(path, m_currentDirectory/path.filename());
 			}
+			AssetRegistry::RefreshAssetRegistry();
 		}
+
+		HotKeysControls(inputEvent);
 	}
 
 	void AssetsExplorerInterface::Render() {
@@ -97,6 +100,30 @@ namespace Loopie {
 		ImGui::End();
 
 
+	}
+
+	void AssetsExplorerInterface::HotKeysControls(const InputEventManager& inputEvent)
+	{
+		if (m_selectedFile.empty()) {
+			return;
+		}
+
+		if (inputEvent.GetKeyStatus(SDL_SCANCODE_DELETE) == KeyState::DOWN) {
+			DirectoryManager::Delete(m_selectedFile);
+			AssetRegistry::RefreshAssetRegistry();
+		}
+
+		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_C, KeyModifier::CTRL)) {
+			/// Copy
+		}
+
+		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_V, KeyModifier::CTRL)) {
+			/// Paste
+		}
+
+		if (inputEvent.GetKeyWithModifier(SDL_SCANCODE_X, KeyModifier::CTRL)) {
+			/// Cut
+		}
 	}
 
 	void AssetsExplorerInterface::GetExternalFile()

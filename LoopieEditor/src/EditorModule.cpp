@@ -61,6 +61,7 @@ namespace Loopie
 			AssetRegistry::RefreshAssetRegistry();
 		}
 
+		m_hierarchy.Update(dt, inputEvent);
 		m_assetsExplorer.Update(dt, inputEvent);
 		m_scene.Update(dt, inputEvent);
 
