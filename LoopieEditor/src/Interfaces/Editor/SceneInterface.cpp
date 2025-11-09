@@ -6,6 +6,7 @@
 #include "Loopie/Components/Transform.h"
 
 #include "Loopie/Resources/AssetRegistry.h"
+#include "Loopie/Resources/ResourceManager.h"
 #include "Loopie/Importers/MeshImporter.h"
 #include "Loopie/Importers/TextureImporter.h"
 #include "Loopie/Components/MeshRenderer.h"
@@ -93,7 +94,8 @@ namespace Loopie {
 
 		for (size_t i = 0; i < meta.CachesPath.size(); i++)
 		{
-			std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(meta.UUID, i);
+			
+			std::shared_ptr<Mesh> mesh = ResourceManager::GetMesh(meta, i);;
 
 			if (mesh) {
 				std::shared_ptr<Entity> newEntity;
@@ -112,7 +114,7 @@ namespace Loopie {
 		Metadata& meta = AssetRegistry::GetOrCreateMetadata(texturePath);
 
 		TextureImporter::ImportImage(texturePath, meta);
-		std::shared_ptr<Texture> texture = std::make_shared<Texture>(meta.UUID);
+		std::shared_ptr<Texture> texture = ResourceManager::GetTexture(meta);
 		if (texture) {
 			if (HierarchyInterface::s_SelectedEntity != nullptr) {
 				MeshRenderer* renderer = HierarchyInterface::s_SelectedEntity->GetComponent<MeshRenderer>();

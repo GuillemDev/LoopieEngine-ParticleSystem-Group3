@@ -6,11 +6,11 @@
 #include "Loopie/Core/Log.h"
 #include "Loopie/Render/Renderer.h"
 #include "Loopie/Render/Gizmo.h"
-#include "Loopie/Importers/MeshImporter.h"
-#include "Loopie/Importers/TextureImporter.h"
 
 #include "Loopie/Core/Math.h"
-#include "Loopie/Resources/AssetRegistry.h"
+
+#include "Loopie/Resources/ResourceManager.h"
+#include "Loopie/Importers/TextureImporter.h"
 
 
 #include "Loopie/Components/MeshRenderer.h"
@@ -30,7 +30,7 @@ namespace Loopie
 		std::string defaultTeturePath = "assets/textures/simpleWhiteTexture.png";
 		Metadata& meta = AssetRegistry::GetOrCreateMetadata(defaultTeturePath);
 		TextureImporter::ImportImage(defaultTeturePath, meta);
-		Renderer::SetDefaultTexture(std::make_shared<Texture>(meta.UUID));
+		Renderer::SetDefaultTexture(ResourceManager::GetTexture(meta));
 
 		/////SCENE
 		Application::GetInstance().CreateScene(""); /// Maybe default One
@@ -71,16 +71,18 @@ namespace Loopie
 		m_scene.Update(dt, inputEvent);
 
 		const matrix4& viewProj = m_scene.GetCamera()->GetViewProjectionMatrix();
+
 		m_scene.StartScene();
 		Renderer::BeginScene(viewProj);
 
+		///// MayBe add an Update To Each Component????
 		for (auto& [uuid, entity] : scene->GetAllEntities()) {
+			if(!entity->GetIsActive())
+				continue;
 			MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
-			if (renderer) {
-				renderer->GetMaterial()->GetShader().Bind();
-				renderer->GetMaterial()->GetShader().SetUniformMat4("lp_ViewProjection", viewProj);
-				renderer->Render();
-			}
+			if (!renderer->GetIsActive())
+				continue;
+			Renderer::AddRenderItem(renderer->GetMesh()->GetVAO(), renderer->GetMaterial(), entity->GetTransform());
 		}
 		Renderer::EndScene();
 		m_scene.EndScene();

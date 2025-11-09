@@ -1,7 +1,7 @@
 #include "HierarchyInterface.h"
 #include "Loopie/Core/Log.h"
 #include "Loopie/Components/MeshRenderer.h"
-#include "Loopie/Resources/AssetRegistry.h"
+#include "Loopie/Resources/ResourceManager.h"
 #include "Loopie/Importers/MeshImporter.h"
 
 #include <imgui.h>
@@ -178,7 +178,7 @@ namespace Loopie {
 
 		Metadata& meta = AssetRegistry::GetOrCreateMetadata(modelPath);
 		MeshImporter::ImportModel(modelPath, meta);
-		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(meta.UUID, 0);
+		std::shared_ptr<Mesh> mesh = ResourceManager::GetMesh(meta, 0);
 		if (mesh)
 			renderer->SetMesh(mesh);
 
