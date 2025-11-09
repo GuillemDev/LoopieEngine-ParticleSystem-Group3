@@ -41,6 +41,7 @@ namespace Loopie
 
 	private:
 		void ApplyUniform(const std::string& name, const UniformValue& uniformValue);
+		
 
 	private:
 		Shader m_shader = Shader("assets/shaders/DefaultShader.shader");

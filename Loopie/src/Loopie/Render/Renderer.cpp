@@ -12,6 +12,8 @@
 namespace Loopie {
 
 	std::shared_ptr<Texture> Renderer::s_DefaultTexture = nullptr;
+	matrix4 Renderer::s_ViewProjection = matrix4(1);
+	std::vector<Renderer::RenderItem> Renderer::s_RenderQueue = std::vector<Renderer::RenderItem>();
 
 	void Renderer::Init(void* context) {
 		ASSERT(!gladLoadGLLoader((GLADloadproc)context), "Failed to Initialize GLAD!");
@@ -32,6 +34,7 @@ namespace Loopie {
 	}
 
 	void Renderer::Shutdown() {
+		ilShutDown();
 		Gizmo::Shutdown();
 	}
 
@@ -39,7 +42,7 @@ namespace Loopie {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::SetClearColor(vec4 color) {
+	void Renderer::SetClearColor(const vec4& color) {
 		glClearColor(color.x, color.y, color.z, color.w);
 	}
 
@@ -48,21 +51,45 @@ namespace Loopie {
 		glViewport(x, y, width, height);
 	}
 
-	void Renderer::BeginScene(const matrix4 viewProjectionMatrix)
+	void Renderer::BeginScene(const matrix4& viewProjectionMatrix)
 	{
+		s_ViewProjection = viewProjectionMatrix;
 		Gizmo::BeginGizmo(viewProjectionMatrix);
 	}
 
 	void Renderer::EndScene()
 	{
+		FlushRenderQueue();
 		Gizmo::EndGizmo();
 	}
 
-	void Renderer::Draw(std::shared_ptr<VertexArray> vao, std::shared_ptr<Material> material, const Transform* transform) {
-		vao->Bind();
-		material->Bind();
+	void Renderer::AddRenderItem(std::shared_ptr<VertexArray> vao, std::shared_ptr<Material> material, const Transform* transform)
+	{
+		s_RenderQueue.emplace_back(RenderItem{ vao, vao->GetIndexBuffer().GetCount(), material, transform});
+	}
+
+	void Renderer::FlushRenderQueue()
+	{
+		/// SORT By Material
+
+
+		///
+
+		for (const RenderItem& item : s_RenderQueue) {
+			
+			item.VAO->Bind();
+			item.Material->Bind();
+			SetRenderUniforms(item.Material, item.Transform);
+			glDrawElements(GL_TRIANGLES, item.IndexCount, GL_UNSIGNED_INT, nullptr);
+			item.VAO->Unbind();
+		}
+
+		s_RenderQueue.clear();
+	}
+
+	void Renderer::SetRenderUniforms(std::shared_ptr<Material> material, const Transform* transform)
+	{
+		material->GetShader().SetUniformMat4("lp_ViewProjection", s_ViewProjection);
 		material->GetShader().SetUniformMat4("lp_Transform", transform->GetWorldToLocalMatrix());
-		glDrawElements(GL_TRIANGLES, vao->GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, nullptr);
-		vao->Unbind();
 	}
 }

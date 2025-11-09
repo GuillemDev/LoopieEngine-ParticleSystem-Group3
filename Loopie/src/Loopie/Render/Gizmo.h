@@ -24,7 +24,7 @@ namespace Loopie {
 
 	private:
 
-		static void BeginGizmo(const matrix4 viewProjectionMatrix);
+		static void BeginGizmo(const matrix4& viewProjectionMatrix);
 		static void EndGizmo();
 
 		static void Flush();

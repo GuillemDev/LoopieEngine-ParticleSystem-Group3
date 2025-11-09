@@ -38,7 +38,7 @@ namespace Loopie {
 		delete s_Data.LineBufferModel;
 	}
 
-	void Gizmo::BeginGizmo(const matrix4 viewProjectionMatrix)
+	void Gizmo::BeginGizmo(const matrix4& viewProjectionMatrix)
 	{
 		s_Data.ViewProjection = viewProjectionMatrix;
 

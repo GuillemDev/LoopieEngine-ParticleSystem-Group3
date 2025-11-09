@@ -13,13 +13,11 @@ namespace Loopie {
 
 	void MeshRenderer::Render() {
 		if (m_mesh) {
-			Renderer::Draw(m_mesh->m_vao, m_material, GetTransform());
 			///TEST
 			if(m_drawNormalsPerFace)
 				RenderNormalsPerFace(0.5f,{0,1,1,1});
 			if(m_drawNormalsPerTriangle)
 				RenderNormalsPerTriangle(0.5f,{1,1,0,1});
-			///TEST
 		}
 		
 	}
