@@ -31,6 +31,7 @@ namespace Loopie {
 	void AssetRegistry::RefreshAssetRegistry() {
 		Clear();
 		CleanOrphanedMetadata();
+		ScanEngineDirectory();
 		ScanAssetDirectory();
 
 		for (auto& [key, metadata] : s_Assets) {
@@ -58,6 +59,17 @@ namespace Loopie {
 		s_Assets.clear();
 		s_PathToUUID.clear();
 		s_UUIDToPath.clear();
+	}
+	void AssetRegistry::ScanEngineDirectory() {
+		for (auto& entry : std::filesystem::recursive_directory_iterator("assets"))
+		{
+			auto path = entry.path();
+			if (path.extension() == ".meta")
+				continue;
+
+			Metadata metadata = MetadataRegistry::GetMetadataAsset(path.string());
+			Register(path.string(), metadata);
+		}
 	}
 
 	void AssetRegistry::ScanAssetDirectory()
