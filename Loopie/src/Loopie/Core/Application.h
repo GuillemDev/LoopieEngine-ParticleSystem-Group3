@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Loopie/Core/Module.h"
-#include "Loopie/Core/Time.h"
 #include "Loopie/Core/Window.h"
 #include "Loopie/Core/InputEventManager.h"
 #include "Loopie/Project/Project.h"
@@ -48,8 +47,6 @@ namespace Loopie {
 		ImGuiManager m_imguiManager;
 
 		InputEventManager m_inputEvent;
-
-		Time m_timeManager;
 
 		bool m_running = true;
 		bool m_renderInterface = true;

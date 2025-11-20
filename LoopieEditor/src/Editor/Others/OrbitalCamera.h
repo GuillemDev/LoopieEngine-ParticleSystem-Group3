@@ -12,7 +12,7 @@ namespace Loopie
         ~OrbitalCamera();
 
         void ProcessEvent(const InputEventManager& inputEvent);
-        void Update(float dt);
+        void Update();
 
         Camera* GetCamera() { return m_camera; }
 

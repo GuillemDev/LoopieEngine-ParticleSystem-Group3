@@ -3,48 +3,51 @@ namespace Loopie {
 	{
 	public:
 
-		Time();
-		~Time() = default;
+		Time() = delete;
+		~Time() = delete;
 
-		void CalculateFrame();
+		static void CalculateFrame();
 
-		static void SetFixedDeltaTimeMs(float value);
-		static void SetFixedDeltaTime(float value);
-		static void SetTimeScale(float value);
+		static void SetFixedDeltaTime(float seconds);
+		static void SetFixedDeltaTimeMs(float ms);
+		static void SetTimeScale(float scale);
 
-		static float DeltaTime() { return m_deltaTimeMs / 1000 * m_timeScale; }
-		static float DeltaTimeMs() { return m_deltaTimeMs * m_timeScale; }
-		static float FixedDeltaTime() { return m_fixedDeltaTimeMs / 1000 * m_timeScale; }
-		static float FixedDeltaTimeMs() { return m_fixedDeltaTimeMs * m_timeScale; }
+		static float GetDeltaTime() { return m_deltaTime * m_timeScale; }
+		static float GetDeltaTimeMs() { return m_deltaTime * 1000.f * m_timeScale; }
 
-		static float UnscaledDeltaTime() { return m_deltaTimeMs / 1000; }
-		static float UnscaledDeltaTimeMs() { return m_deltaTimeMs; }
-		static float UnscaledFixedDeltaTime() { return m_fixedDeltaTimeMs / 1000; }
-		static float UnscaledFixedDeltaTimeMs() { return m_fixedDeltaTimeMs; }
+		static float GetFixedDeltaTime() { return m_fixedDeltaTime * m_timeScale; }
+		static float GetFixedDeltaTimeMs() { return m_fixedDeltaTime * 1000.f * m_timeScale; }
 
-		static float RunTime() { return m_runTimeMs / 1000; }
-		static float RunTimeMs() { return m_runTimeMs; }
-		
-		static float ExecutionTime() { return m_executionTimeMs / 1000; }
-		static float ExecutionTimeMs() { return m_executionTimeMs; }
+		static float GetUnscaledDeltaTime() { return m_deltaTime; }
+		static float GetUnscaledDeltaTimeMs() { return m_deltaTime * 1000.f; }
 
-		static int FrameCount() { return m_frameCount; }
+		static float GetUnscaledFixedDeltaTime() { return m_fixedDeltaTime; }
+		static float GetUnscaledFixedDeltaTimeMs() { return m_fixedDeltaTime * 1000.f; }
 
-		static float TimeScale() { return m_timeScale; }
+		static float GetLastFrameTime() { return m_lastFrameTime; }
+
+		static float GetRunTime() { return m_runTime; }
+		static float GetRunTimeMs() { return m_runTime * 1000.f; }
+
+		static float GetExecutionTime() { return m_executionTime; }
+		static float GetExecutionTimeMs() { return m_executionTime * 1000.f; }
+
+		static int GetFrameCount() { return m_frameCount; }
+		static float GetTimeScale() { return m_timeScale; }
 
 	private:
-		float m_lastFrameTime = 0;
-
+		static float m_lastFrameTime;
 		static int m_frameCount;
+
 		//Physic
-		static float m_fixedDeltaTimeMs;
+		static float m_fixedDeltaTime;
 
 		// Game Clock
+		static float m_deltaTime;
 		static float m_timeScale;
-		static float m_deltaTimeMs;
-		static float m_runTimeMs;
+		static float m_runTime;
 
 		//Real Time Clock
-		static float m_executionTimeMs;
+		static float m_executionTime;
 	};
 }

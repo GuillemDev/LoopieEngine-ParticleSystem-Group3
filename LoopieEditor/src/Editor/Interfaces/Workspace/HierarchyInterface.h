@@ -8,7 +8,7 @@ namespace Loopie {
 		HierarchyInterface();
 		~HierarchyInterface() = default;
 		void Init() override {}
-		void Update(float dt, const InputEventManager& inputEvent) override;
+		void Update(const InputEventManager& inputEvent) override;
 		void Render() override;
 
 		void SetScene(Scene* scene);

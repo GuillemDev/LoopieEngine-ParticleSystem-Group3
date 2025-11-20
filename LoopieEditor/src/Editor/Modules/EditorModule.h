@@ -22,7 +22,7 @@ namespace Loopie {
 		void OnLoad()override;
 		void OnUnload()override;
 
-		void OnUpdate(float dt) override;
+		void OnUpdate() override;
 
 		void OnInterfaceRender()override;
 	private:

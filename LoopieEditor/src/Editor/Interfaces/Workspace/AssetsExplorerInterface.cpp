@@ -43,7 +43,7 @@ namespace Loopie {
 		GoToDirectory(project.GetAssetsPath());
 	}
 
-	void AssetsExplorerInterface::Update(float dt, const InputEventManager& inputEvent) {
+	void AssetsExplorerInterface::Update(const InputEventManager& inputEvent) {
 		if (m_focused)
 			HotKeysControls(inputEvent);
 

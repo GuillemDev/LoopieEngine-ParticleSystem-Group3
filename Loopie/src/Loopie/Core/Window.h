@@ -36,8 +36,6 @@ namespace Loopie {
 		void SetFramerateLimit(int fps);
 		void SetTitle(const char* title);/// Maybe Do a getter also?
 		void SetPosition(int x, int y);
-		float GetDeltaTimeMs();
-		float GetDeltaTime();
 		// missing borderless, vsync, multi-monitor?
 
 		SDL_Window* GetSDLWindow() const { return m_window; }
@@ -57,8 +55,6 @@ namespace Loopie {
 		bool m_vsyncState = false;
 
 		int m_targetFramerate = 60;
-		unsigned long long m_lastFrameTime = 0;
-		float m_deltaTimeMs = 0.0f;
 	};
 }
 

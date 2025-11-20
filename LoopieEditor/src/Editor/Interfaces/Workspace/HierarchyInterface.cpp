@@ -13,7 +13,7 @@ namespace Loopie {
 		
 	}
 
-	void HierarchyInterface::Update(float dt, const InputEventManager& inputEvent)
+	void HierarchyInterface::Update(const InputEventManager& inputEvent)
 	{
 		if(m_focused)
 			HotKeysSelectedEntiy(inputEvent);

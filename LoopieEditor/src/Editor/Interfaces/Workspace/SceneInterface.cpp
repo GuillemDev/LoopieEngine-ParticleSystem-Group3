@@ -47,14 +47,14 @@ namespace Loopie {
 		m_gizmoMode = ImGuizmo::WORLD;
 	}
 
-	void SceneInterface::Update(float dt, const InputEventManager& inputEvent)
+	void SceneInterface::Update(const InputEventManager& inputEvent)
 	{
 		
 		if (!m_focused && !m_interacted)
 			return;
 		
 		m_camera->ProcessEvent(inputEvent);
-		m_camera->Update(dt);
+		m_camera->Update();
 
 	}
 

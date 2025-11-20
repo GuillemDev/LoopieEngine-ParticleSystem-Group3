@@ -2,6 +2,7 @@
 
 #include "Loopie/Core/Assert.h"
 #include "Loopie/Core/Log.h"
+#include "Loopie/Core/Time.h"
 #include "Loopie/Render/Renderer.h"
 
 namespace Loopie {
@@ -93,8 +94,7 @@ namespace Loopie {
 
 			Renderer::Clear();
 
-			//m_window->StartFrame();
-			m_timeManager.CalculateFrame();
+			Time::CalculateFrame();
 
 			m_imguiManager.StartFrame();
 
@@ -103,10 +103,9 @@ namespace Loopie {
 			m_window->ProcessEvents(m_inputEvent);
 			ProcessEvents(m_inputEvent);
 
-			float dt = Time::DeltaTime();
 			for (Module* module : m_modules) {
 				if (module->IsActive()) {
-					module->OnUpdate(dt);
+					module->OnUpdate();
 				}
 			}
 

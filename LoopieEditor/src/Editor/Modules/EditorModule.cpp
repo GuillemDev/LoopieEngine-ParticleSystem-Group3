@@ -57,7 +57,7 @@ namespace Loopie
 		AssetRegistry::Shutdown();
 	}
 
-	void EditorModule::OnUpdate(float dt)
+	void EditorModule::OnUpdate()
 	{
 
 		Application& app = Application::GetInstance();
@@ -67,9 +67,9 @@ namespace Loopie
 			AssetRegistry::RefreshAssetRegistry();
 		}
 
-		m_hierarchy.Update(dt, inputEvent);
-		m_assetsExplorer.Update(dt, inputEvent);
-		m_scene.Update(dt, inputEvent);
+		m_hierarchy.Update(inputEvent);
+		m_assetsExplorer.Update(inputEvent);
+		m_scene.Update(inputEvent);
 
 		const std::vector<Camera*>& cameras = Renderer::GetRendererCameras();
 		for (const auto cam : cameras)
