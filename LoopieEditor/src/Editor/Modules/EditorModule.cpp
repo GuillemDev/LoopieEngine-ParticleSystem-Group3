@@ -152,6 +152,12 @@ namespace Loopie
 			if (!camera->GetFrustum().Intersects(renderer->GetWorldAABB()))
 				continue;
 
+			if (entity == HierarchyInterface::s_SelectedEntity) {
+				Renderer::EnableStencil();
+				Renderer::AddRenderItem(renderer->GetMesh()->GetVAO(), /*outlineMaterial*/, entity->GetTransform());
+				Renderer::DisableStencil();
+			}
+
 			renderer->Render();
 			Renderer::AddRenderItem(renderer->GetMesh()->GetVAO(), renderer->GetMaterial(), entity->GetTransform());
 		}

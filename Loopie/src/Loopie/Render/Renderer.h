@@ -43,6 +43,11 @@ namespace Loopie {
 		static void EnableDepth();
 		static void DisableDepth();
 
+		static void EnableStencil();
+		static void DisableStencil();
+		static void SetStencilMask(/**/);
+		static void SetStencilFunc(/**/);
+
 	private:
 		static void SetRenderUniforms(std::shared_ptr<Material> material, const Transform* transform);
 		static void FlushRenderQueue();
