@@ -112,6 +112,8 @@ namespace Loopie {
 		if (ImGui::CollapsingHeader("Mesh Renderer")) {
 			auto mesh = meshRenderer->GetMesh();
 			ImGui::Text("Mesh: %s", mesh ? "Assigned" : "None");
+			if (!mesh)
+				return;
 			ImGui::Text("Mesh Vertices: %d", mesh->GetData().VerticesAmount);
 
 			ImGui::Separator();

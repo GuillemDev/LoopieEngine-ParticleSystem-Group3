@@ -4,6 +4,8 @@
 #include "Loopie/Render/Gizmo.h"
 #include "Loopie/Math/MathTypes.h"
 #include "Loopie/Components/Transform.h"
+#include "Loopie/Resources/AssetRegistry.h"
+#include "Loopie/Resources/ResourceManager.h"
 
 namespace Loopie {
 
@@ -79,6 +81,7 @@ namespace Loopie {
 		json meshRendererObj = json::object();
 
 		meshRendererObj["mesh_uuid"] = m_mesh->GetUUID().Get();
+		meshRendererObj["mesh_index"] = m_mesh->GetMeshIndex();
 
 		json componentWrapper = json::object();
 		componentWrapper["meshrenderer"] = meshRendererObj;
@@ -92,7 +95,10 @@ namespace Loopie {
 		if (data.contains("mesh_uuid"))
 		{
 			// This is causing an error so I have to revise it at another point
-			//m_mesh->SetUUID(data["mesh_uuid"].get<std::string>());
+			UUID id = UUID(data["mesh_uuid"].get<std::string>());
+			unsigned int index = data["mesh_index"].get<unsigned int>();
+			Metadata* meta = AssetRegistry::GetMetadata(id);
+			m_mesh = ResourceManager::GetMesh(*meta, index);
 		}
 	}
 
