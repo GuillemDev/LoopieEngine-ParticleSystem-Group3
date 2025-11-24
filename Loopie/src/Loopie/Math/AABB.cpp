@@ -1,5 +1,6 @@
 #include "AABB.h"
 #include "Loopie/Math/OBB.h"
+#include "Loopie/Math/MathUtils.h"
 
 namespace Loopie {
     void AABB::SetNegativeInfinity() {
@@ -24,6 +25,19 @@ namespace Loopie {
         MaxPoint = max(MaxPoint, point);
     }
 
+    bool AABB::Contains(const vec3& point) const {
+        bool insideX = point.x >= MinPoint.x && point.x <= MaxPoint.x;
+        bool insideY = point.y >= MinPoint.y && point.y <= MaxPoint.y;
+        bool insideZ = point.z >= MinPoint.z && point.z <= MaxPoint.z;
+
+        return insideX && insideY && insideZ;
+    }
+
+    bool AABB::ContainsRay(const vec3& rayStart, const vec3& rayEnd) const
+    {
+        return Contains(rayStart) && Contains(rayEnd);
+    }
+
     bool AABB::Intersects(const AABB& other) const {
         if (MaxPoint.x < other.MinPoint.x || MinPoint.x > other.MaxPoint.x) 
             return false;
@@ -35,6 +49,54 @@ namespace Loopie {
         return true;
     }
 
+    bool AABB::IntersectsRay(const vec3& rayStart, const vec3& rayEnd) const
+    {
+        vec3 dir = rayEnd - rayStart;
+        float length = glm::length(dir);
+        if (length < Math::EPSILON) {
+            return Contains(rayStart);
+        }
+
+        vec3 invDir = 1.0f / dir;
+        vec3 t1 = (MinPoint - rayStart) * invDir;
+        vec3 t2 = (MaxPoint - rayStart) * invDir;
+
+        vec3 tMin = glm::min(t1, t2);
+        vec3 tMax = glm::max(t1, t2);
+
+        float enterPoint = glm::max(glm::max(tMin.x, tMin.y), tMin.z);
+        float exitPoint = glm::min(glm::min(tMax.x, tMax.y), tMax.z);
+
+        return enterPoint <= exitPoint && exitPoint >= 0.0f && enterPoint <= length;
+    }
+
+    bool AABB::IntersectsRay(const vec3& rayOrigin, const vec3& rayDirection, vec3& hitPoint) const
+    {
+        vec3 invDir = 1.0f / rayDirection;
+
+        vec3 t1 = (MinPoint - rayOrigin) * invDir;
+        vec3 t2 = (MaxPoint - rayOrigin) * invDir;
+
+        vec3 tMin = glm::min(t1, t2);
+        vec3 tMax = glm::max(t1, t2);
+
+        float enterPoint = glm::max(glm::max(tMin.x, tMin.y), tMin.z);
+        float exitPoint = glm::min(glm::min(tMax.x, tMax.y), tMax.z);
+
+        if (enterPoint <= exitPoint && exitPoint >= 0.0f) {
+            if (enterPoint >= 0.0f) {
+                hitPoint = rayOrigin + rayDirection * enterPoint;
+            }
+            else {
+                hitPoint = rayOrigin + rayDirection * exitPoint;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+
     vec3 AABB::GetCenter() const {
         return (MinPoint + MaxPoint) * 0.5f;
     }
@@ -45,14 +107,6 @@ namespace Loopie {
 
     vec3 AABB::GetSize() const {
         return MaxPoint - MinPoint;
-    }
-
-    bool AABB::Contains(const vec3& point) const {
-        bool insideX = point.x >= MinPoint.x && point.x <= MaxPoint.x;
-        bool insideY = point.y >= MinPoint.y && point.y <= MaxPoint.y;
-        bool insideZ = point.z >= MinPoint.z && point.z <= MaxPoint.z;
-
-        return insideX && insideY && insideZ;
     }
 
     float AABB::GetVolume() const {

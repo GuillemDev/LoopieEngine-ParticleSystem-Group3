@@ -1,6 +1,7 @@
 #pragma once
 #include "Loopie/Resources/Types/Mesh.h"
 #include "Loopie/Resources/MetadataRegistry.h"
+#include "Loopie/Importers/ImportSettings.h"
 
 #include <memory>
 #include <vector>
@@ -8,6 +9,12 @@
 
 
 namespace Loopie {
+
+	struct MeshImportSettigns : public ImportSettings {
+
+
+	};
+
 	class MeshImporter {
 	public:
 		static void ImportModel(const std::string& filepath, Metadata& metadata);

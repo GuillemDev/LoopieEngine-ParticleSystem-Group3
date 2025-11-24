@@ -22,7 +22,7 @@ namespace Loopie
             return abs(a - b) < epsilon;
         }
 
-        static void DecomposeMatrix(const matrix4& matrix, vec3& position, quaternion& rotation, glm::vec3& scale)
+        inline void DecomposeMatrix(const matrix4& matrix, vec3& position, quaternion& rotation, glm::vec3& scale)
         {
             vec3 skew;
             vec4 perspective;

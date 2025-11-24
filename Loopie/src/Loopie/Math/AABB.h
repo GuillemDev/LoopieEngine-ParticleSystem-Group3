@@ -12,15 +12,23 @@ namespace Loopie{
         void Enclose(const AABB& other);
         void Enclose(const OBB& other);
         void Enclose(const vec3& point);
+
+        bool Contains(const vec3& point) const;
+        bool ContainsRay(const vec3& rayStart, const vec3& rayEnd) const;
+
         bool Intersects(const AABB& other) const;
+        bool IntersectsRay(const vec3& rayStart, const vec3& rayEnd) const;
+        bool IntersectsRay(const vec3& rayOrigin, const vec3& rayDirection, vec3& hitPoint) const;
+
 
         vec3 GetCenter() const;
         vec3 GetExtents() const;
         vec3 GetSize() const;
-        bool Contains(const vec3& point) const;
         float GetVolume() const;
 
         OBB ToOBB() const;
         AABB Transform(const matrix4& localToWorld) const;
+
+
     };
 }

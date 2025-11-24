@@ -1,5 +1,6 @@
 #include "OBB.h"
 #include "Loopie/Math/AABB.h"
+#include "Loopie/Math/MathUtils.h"
 
 namespace Loopie {
 	void OBB::ApplyTransform(const matrix4& transform)
@@ -38,6 +39,91 @@ namespace Loopie {
             }
         }
         return true;
+    }
+
+    bool OBB::ContainsRay(const vec3& rayStart, const vec3& rayEnd) const {
+        vec3 localStart = rayStart - Center;
+        vec3 localEnd = rayEnd - Center;
+
+        for (int i = 0; i < 3; i++) {
+            float startProj = dot(localStart, Axes[i]);
+            float endProj = dot(localEnd, Axes[i]);
+
+            if (startProj < -Extents[i] || startProj > Extents[i] ||
+                endProj < -Extents[i] || endProj > Extents[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool OBB::IntersectsRay(const vec3& rayStart, const vec3& rayEnd) const {
+        vec3 localStart = rayStart - Center;
+        vec3 localEnd = rayEnd - Center;
+
+        float startLocal[3], endLocal[3];
+        for (int i = 0; i < 3; i++) {
+            startLocal[i] = dot(localStart, Axes[i]);
+            endLocal[i] = dot(localEnd, Axes[i]);
+        }
+
+        vec3 localMin(-Extents.x, -Extents.y, -Extents.z);
+        vec3 localMax(Extents.x, Extents.y, Extents.z);
+
+        vec3 localDir = localEnd - localStart;
+        float length = glm::length(localDir);
+        if (length < Math::EPSILON) {
+            return (startLocal[0] >= -Extents.x && startLocal[0] <= Extents.x && startLocal[1] >= -Extents.y && startLocal[1] <= Extents.y && startLocal[2] >= -Extents.z && startLocal[2] <= Extents.z);
+        }
+
+        vec3 invLocalDir = 1.0f / localDir;
+        vec3 t1 = (localMin - vec3(startLocal[0], startLocal[1], startLocal[2])) * invLocalDir;
+        vec3 t2 = (localMax - vec3(startLocal[0], startLocal[1], startLocal[2])) * invLocalDir;
+
+        vec3 tMin = min(t1, t2);
+        vec3 tMax = max(t1, t2);
+
+        float tEnter = max(max(tMin.x, tMin.y), tMin.z);
+        float exitPoint = min(min(tMax.x, tMax.y), tMax.z);
+
+        return tEnter <= exitPoint && exitPoint >= 0.0f && tEnter <= length;
+    }
+
+
+    bool OBB::IntersectsRay(const vec3& rayOrigin, const vec3& rayDirection, vec3& hitPoint) const {
+        vec3 localOrigin = rayOrigin - Center;
+
+        float originLocal[3], dirLocal[3];
+        for (int i = 0; i < 3; i++) {
+            originLocal[i] = dot(localOrigin, Axes[i]);
+            dirLocal[i] = dot(rayDirection, Axes[i]);
+        }
+
+        vec3 localMin(-Extents.x, -Extents.y, -Extents.z);
+        vec3 localMax(Extents.x, Extents.y, Extents.z);
+
+        vec3 invDirLocal = 1.0f / vec3(dirLocal[0], dirLocal[1], dirLocal[2]);
+
+        vec3 t1 = (localMin - vec3(originLocal[0], originLocal[1], originLocal[2])) * invDirLocal;
+        vec3 t2 = (localMax - vec3(originLocal[0], originLocal[1], originLocal[2])) * invDirLocal;
+
+        vec3 tMin = min(t1, t2);
+        vec3 tMax = max(t1, t2);
+
+        float entryPoint = max(max(tMin.x, tMin.y), tMin.z);
+        float exitPoint = min(min(tMax.x, tMax.y), tMax.z);
+
+        if (entryPoint <= exitPoint && exitPoint >= 0.0f) {
+            if (entryPoint >= 0.0f) {
+                hitPoint = rayOrigin + rayDirection * entryPoint;
+            }
+            else {
+                hitPoint = rayOrigin + rayDirection * exitPoint;
+            }
+            return true;
+        }
+
+        return false;
     }
 
     const std::array<vec3, 8>& OBB::GetCorners() const
