@@ -8,6 +8,11 @@
 #include <memory>
 
 namespace Loopie {
+	struct Triangle
+	{
+		vec3 v0, v1, v2;
+	};
+
 	class MeshRenderer : public Component, public IObserver<TransformNotification> {
 	public:
 		DEFINE_TYPE(MeshRenderer)
@@ -43,6 +48,8 @@ namespace Loopie {
 
 		json Serialize() const override;
 		void Deserialize(const json& data) override;
+
+		bool GetTriangle(int triangleIndex, Triangle& triangle);
 
 	private:
 		void RecalculateBoundingBoxes() const;

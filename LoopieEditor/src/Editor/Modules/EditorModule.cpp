@@ -197,7 +197,7 @@ namespace Loopie
 	void EditorModule::MousePick(Camera* camera)
 	{
 		Ray ray = Ray{ vec3(0), vec3(1) };
-
+		float distance = -1;
 		for (auto& [uuid, entity] : scene->GetAllEntities()) {
 			if (!entity->GetIsActive())
 				continue;
@@ -215,8 +215,22 @@ namespace Loopie
 			}
 
 			const MeshData& data = renderer->GetMesh()->GetData();
-			data.
-			if()
+			for (int i = 0; i < data.IndicesAmount/3; i++)
+			{
+				std::vector<vec3> vertices;
+				Triangle t;
+				if (!renderer->GetTriangle(i, t))continue;
+				vertices[0] = t.v0;
+				vertices[1] = t.v1;
+				vertices[2] = t.v2;
+				vec3 hitPoint;
+				if (ray.Intersects(vertices, true, hitPoint))
+				{
+					if (distance == -1 || distance > (hitPoint - ray.StartPoint()).length())continue;
+					HierarchyInterface::s_SelectedEntity = entity;
+					distance = (hitPoint - ray.StartPoint()).length();
+				}
+			}
 		}
 	}
 
