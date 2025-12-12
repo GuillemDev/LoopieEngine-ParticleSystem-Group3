@@ -5,7 +5,7 @@
 #include "Editor/Interfaces/Interface.h"
 #include "Editor/Others/OrbitalCamera.h"
 #include "Loopie/Render/FrameBuffer.h"
-
+#include "Loopie/Math/Ray.h"
 #include <array>
 
 namespace Loopie {
@@ -26,17 +26,21 @@ namespace Loopie {
 		void ChargeTexture(const std::string& texturePath);
 		void ChargeMaterial(const std::string& materialPath);
 
+		void MousePick();
+
 	private:
 		void Drop();
 		void DrawHelperBar();
-
+		Ray MouseRay();
 
 	private:
 		std::shared_ptr<FrameBuffer> m_buffer;
 		std::shared_ptr<OrbitalCamera> m_camera;
 
+		bool m_usingGuizmo;
 		bool m_interacted = false;
 		ivec2 m_windowSize = ivec2(0);
+		ivec2 m_mousePosition = ivec2(0);
 
 		int m_gizmoOperation = 0;
 		int m_gizmoMode = 0;

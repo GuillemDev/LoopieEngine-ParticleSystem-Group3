@@ -48,9 +48,7 @@ namespace Loopie {
 					Gizmo::DrawCube(m_worldOBB.GetCorners());
 			}
 			///
-
 		}
-		
 	}
 
 	void MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh)
@@ -117,6 +115,39 @@ namespace Loopie {
 		}
 	}
 
+	bool MeshRenderer::GetTriangle(int triangleIndex, Triangle& triangle)
+	{
+		const BufferLayout& layout = m_mesh->m_vbo->GetLayout();
+		const BufferElement* posElem = layout.GetElementByIndex(0);
+		if (posElem->Type == GLVariableType::NONE)
+			return false;
+
+		unsigned int base = triangleIndex * 3;
+		const MeshData& meshData = m_mesh->GetData();
+		if (base + 2 >= meshData.Indices.size())
+			return false;
+
+		unsigned int i0 = meshData.Indices[base + 0];
+		unsigned int i1 = meshData.Indices[base + 1];
+		unsigned int i2 = meshData.Indices[base + 2];
+
+		if (i0 >= meshData.VerticesAmount || i1 >= meshData.VerticesAmount || i2 >= meshData.VerticesAmount)
+			return false;
+
+		vec3 p0 = GetVertexVec3Data(meshData, i0, posElem->Offset);
+		vec3 p1 = GetVertexVec3Data(meshData, i1, posElem->Offset);
+		vec3 p2 = GetVertexVec3Data(meshData, i2, posElem->Offset);
+
+		Transform* transform = GetTransform();
+		matrix4 modelMatrix = transform->GetLocalToWorldMatrix();
+
+		triangle.v0 = vec3(modelMatrix * vec4(p0, 1));
+		triangle.v1 = vec3(modelMatrix * vec4(p1, 1));
+		triangle.v2 = vec3(modelMatrix * vec4(p2, 1));
+
+		return true;
+	}
+
 	void MeshRenderer::RecalculateBoundingBoxes() const
 	{
 		if (!m_boundingBoxesDirty || !m_mesh)
@@ -155,33 +186,22 @@ namespace Loopie {
 
 		Transform* transform = GetTransform();
 		matrix4 modelMatrix = transform->GetLocalToWorldMatrix();
-		matrix3 normalMatrix = transpose(inverse(matrix3(modelMatrix)));
 
-		for (unsigned int i = 0; i + 5 < data.Indices.size(); i += 6) {
-			unsigned int indices[6] = {
-				data.Indices[i + 0], data.Indices[i + 1], data.Indices[i + 2],
-				data.Indices[i + 3], data.Indices[i + 4], data.Indices[i + 5]
-			};
+		unsigned int  triangleCount = data.Indices.size() / 3;
 
-			bool skip = false;
-			for (int j = 0; j < 6; j++)
-				if (indices[j] >= data.VerticesAmount)
-					skip = true;
-			if (skip) continue;
+		for (unsigned int i = 0; i + 1 < triangleCount; i += 2) {
+			Triangle t1, t2;
 
-			vec3 p[6];
-			for (int j = 0; j < 6; j++)
-				p[j] = GetVertexVec3Data(data, indices[j], posElem->Offset);
+			if (!GetTriangle(i, t1)) continue;
+			if (!GetTriangle(i+1, t2)) continue;
 
-			for (int j = 0; j < 6; j++)
-				p[j] = vec3(modelMatrix * vec4(p[j], 1.0f));
 
-			vec3 n1 = normalize(cross(p[1] - p[0], p[2] - p[0]));
-			vec3 n2 = normalize(cross(p[4] - p[3], p[5] - p[3]));
+			vec3 n1 = normalize(cross(t1.v1 - t1.v0, t1.v2 - t1.v0));
+			vec3 n2 = normalize(cross(t2.v1 - t2.v0, t2.v2 - t2.v0));
 			vec3 faceNormal = normalize(n1 + n2);
 
-			vec3 centroid1 = (p[0] + p[1] + p[2]) / 3.0f;
-			vec3 centroid2 = (p[3] + p[4] + p[5]) / 3.0f;
+			vec3 centroid1 = (t1.v0 + t1.v1 + t1.v2) / 3.0f;
+			vec3 centroid2 = (t2.v0 + t2.v1 + t2.v2) / 3.0f;
 			vec3 faceCentroid = (centroid1 + centroid2) * 0.5f;
 
 			Gizmo::DrawLine(faceCentroid, faceCentroid + faceNormal * length, color);
@@ -195,35 +215,25 @@ namespace Loopie {
 			return;
 
 		const BufferLayout& layout = m_mesh->m_vbo->GetLayout();
-		const BufferElement* posElem = layout.GetElementByIndex(0); // a_Position
+		const BufferElement* posElem = layout.GetElementByIndex(0);
 		if (posElem->Type == GLVariableType::NONE)
 			return;
 
 		Transform* transform = GetTransform();
 		matrix4 modelMatrix = transform->GetLocalToWorldMatrix();
-		matrix3 normalMatrix = transpose(inverse(matrix3(modelMatrix)));
 
-		for (unsigned int i = 0; i + 2 < data.Indices.size(); i += 3) {
-			unsigned int i0 = data.Indices[i + 0];
-			unsigned int i1 = data.Indices[i + 1];
-			unsigned int i2 = data.Indices[i + 2];
+		Triangle t;
 
-			if (i0 >= data.VerticesAmount || i1 >= data.VerticesAmount || i2 >= data.VerticesAmount)
-				continue;
+		unsigned int  triangleCount = data.Indices.size() / 3;
 
-			vec3 p0 = GetVertexVec3Data(data, i0, posElem->Offset);
-			vec3 p1 = GetVertexVec3Data(data, i1, posElem->Offset);
-			vec3 p2 = GetVertexVec3Data(data, i2, posElem->Offset);
+		for (unsigned int i = 0; i < triangleCount; i ++) {
+			
+			if (!GetTriangle(i, t)) continue;
 
-			p0 = vec3(modelMatrix * vec4(p0, 1.0f));
-			p1 = vec3(modelMatrix * vec4(p1, 1.0f));
-			p2 = vec3(modelMatrix * vec4(p2, 1.0f));
-
-			vec3 n = normalize(cross(p1 - p0, p2 - p0));
-			vec3 centroid = (p0 + p1 + p2) / 3.0f;
+			vec3 n = normalize(cross(t.v1 - t.v0, t.v2 - t.v0));
+			vec3 centroid = (t.v0 + t.v1 + t.v2) / 3.0f;
 
 			Gizmo::DrawLine(centroid, centroid + n * length, color);
 		}
 	}
-
 }

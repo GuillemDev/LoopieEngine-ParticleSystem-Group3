@@ -13,6 +13,8 @@
 #include "Loopie/Importers/TextureImporter.h"
 #include "Loopie/Importers/MaterialImporter.h"
 
+#include "Loopie/Math/Ray.h"
+
 #include "Loopie/Components/MeshRenderer.h"
 #include "Loopie/Components/Transform.h"
 #include "Loopie/Resources/Types/Material.h"
@@ -202,6 +204,46 @@ namespace Loopie
 		m_scene.ChargeModel("assets/models/BakerHouse.fbx");
 		m_scene.ChargeTexture("assets/textures/Baker_house.png");
 	}
+
+	/*void EditorModule::MousePick(Camera* camera)
+	{
+		Ray ray = Ray{ vec3(0), vec3(1) };
+		float distance = -1;
+		for (auto& [uuid, entity] : scene->GetAllEntities()) {
+			if (!entity->GetIsActive())
+				continue;
+			MeshRenderer* renderer = entity->GetComponent<MeshRenderer>();
+			if (!renderer || !renderer->GetIsActive() || !renderer->GetMesh())
+				continue;
+
+			if (!camera->GetFrustum().Intersects(renderer->GetWorldAABB()))
+				continue;
+
+			const AABB& worldAABB = renderer->GetWorldAABB();
+			vec3 hitPoint;
+			if (!worldAABB.IntersectsRay(ray.StartPoint(), ray.EndPoint(), hitPoint)) {
+				continue;
+			}
+
+			const MeshData& data = renderer->GetMesh()->GetData();
+			for (int i = 0; i < data.IndicesAmount/3; i++)
+			{
+				std::vector<vec3> vertices;
+				Triangle t;
+				if (!renderer->GetTriangle(i, t))continue;
+				vertices[0] = t.v0;
+				vertices[1] = t.v1;
+				vertices[2] = t.v2;
+				vec3 hitPoint;
+				if (ray.Intersects(vertices, true, hitPoint))
+				{
+					if (distance == -1 || distance > (hitPoint - ray.StartPoint()).length())continue;
+					HierarchyInterface::s_SelectedEntity = entity;
+					distance = (hitPoint - ray.StartPoint()).length();
+				}
+			}
+		}
+	}*/
 
 	void EditorModule::OnNotify(const EngineNotification& type)
 	{
