@@ -107,8 +107,9 @@ namespace Loopie {
 
 		bool m_dirtyFooterText = true;
 		std::string m_cachedFooterText;
-
-		// Inherited via IObserver
+		
+		bool m_fileDropped = false;
+		std::vector<std::string> m_droppedFiles;
 		
 	};
 }

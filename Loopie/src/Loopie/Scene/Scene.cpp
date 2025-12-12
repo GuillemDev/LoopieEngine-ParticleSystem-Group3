@@ -66,12 +66,11 @@ namespace Loopie {
 	std::shared_ptr<Entity> Scene::CreateEntity(const std::string& name,
 												std::shared_ptr<Entity> parentEntity)
 	{
-		std::string uniqueName = GetUniqueName(parentEntity, name);
+		std::shared_ptr<Entity> realParent = parentEntity ? parentEntity : m_rootEntity;
+		std::string uniqueName = GetUniqueName(realParent, name);
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>(uniqueName);
-		if (!parentEntity)
-			m_rootEntity->AddChild(entity);
-		else
-			parentEntity->AddChild(entity);
+
+		realParent->AddChild(entity);
 
 		entity->AddComponent<Transform>();
 
@@ -84,14 +83,14 @@ namespace Loopie {
 	std::shared_ptr<Entity> Scene::CreateEntity(const UUID& uuid, const std::string& name,
 												 std::shared_ptr<Entity> parentEntity)
 	{
-		std::string uniqueName = GetUniqueName(parentEntity, name);
+
+		std::shared_ptr<Entity> realParent = parentEntity ? parentEntity : m_rootEntity;
+
+		std::string uniqueName = GetUniqueName(realParent, name);
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>(uniqueName);
 		entity->SetUUID(uuid);
 
-		if (!parentEntity)
-			m_rootEntity->AddChild(entity);
-		else
-			parentEntity->AddChild(entity);
+		realParent->AddChild(entity);
 
 		entity->AddComponent<Transform>();
 
@@ -104,12 +103,11 @@ namespace Loopie {
 	std::shared_ptr<Entity> Scene::CreateEntity(const vec3& position, const quaternion& rotation, const vec3& scale,
 												std::shared_ptr<Entity> parentEntity, const std::string& name)
 	{
-		std::string uniqueName = GetUniqueName(parentEntity, name);
+		std::shared_ptr<Entity> realParent = parentEntity ? parentEntity : m_rootEntity;
+		std::string uniqueName = GetUniqueName(realParent, name);
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>(uniqueName);
-		if (!parentEntity)
-			m_rootEntity->AddChild(entity);
-		else
-			parentEntity->AddChild(entity);
+
+		realParent->AddChild(entity);
 
 		entity->AddComponent<Transform>(position, rotation, scale);
 		m_entities[entity->GetUUID()] = entity;
@@ -122,12 +120,10 @@ namespace Loopie {
 										std::shared_ptr<Entity> parentEntity,
 										const std::string& name)
 	{
-		std::string uniqueName = GetUniqueName(parentEntity, name);
+		std::shared_ptr<Entity> realParent = parentEntity ? parentEntity : m_rootEntity;
+		std::string uniqueName = GetUniqueName(realParent, name);
 		std::shared_ptr<Entity> entity = std::make_shared<Entity>(uniqueName);
-		if (!parentEntity)
-			m_rootEntity->AddChild(entity);
-		else
-			parentEntity->AddChild(entity);
+		realParent->AddChild(entity);
 
 		if (!transform)
 		{
@@ -276,6 +272,7 @@ namespace Loopie {
 			bool active = entityNode.GetValue<bool>("active", false).Result;
 
 			std::shared_ptr<Entity> entity = CreateEntity(uuid, name);
+			entity->SetName(name);
 			entity->SetIsActive(active);		
 		}
 

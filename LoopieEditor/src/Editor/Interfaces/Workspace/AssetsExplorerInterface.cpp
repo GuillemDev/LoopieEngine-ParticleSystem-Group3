@@ -103,7 +103,7 @@ namespace Loopie {
 						ImGui::EndPopup();
 					}
 
-					if (m_focused)
+					//if (m_focused)
 						GetExternalFile();
 					DrawFolderContent();
 
@@ -159,16 +159,31 @@ namespace Loopie {
 
 		Application& app = Application::GetInstance();
 		InputEventManager& inputEvent = app.GetInputEvent();
-		if (!inputEvent.HasFileBeenDropped())
+		if (!inputEvent.HasFileBeenDropped() && !m_fileDropped)
 			return;
+
+		if (m_fileDropped && !m_focused) {
+			m_fileDropped = false;
+			m_droppedFiles.clear();
+			return;
+		}
+		if (!m_fileDropped) {
+			m_fileDropped = true;
+			m_droppedFiles.clear();
+			for (const char* path : inputEvent.GetDroppedFiles()) {
+				m_droppedFiles.emplace_back(path);
+			}
+			return;
+		}
+
+		m_fileDropped = false;
 
 		std::filesystem::path assetsPath = app.m_activeProject.GetAssetsPath();
 		std::filesystem::path currentPath = m_currentDirectory;
 
-		const std::vector<const char*>& droppedFiles = inputEvent.GetDroppedFiles();
-		for (size_t i = 0; i < droppedFiles.size(); i++)
+		for (size_t i = 0; i < m_droppedFiles.size(); i++)
 		{
-			std::filesystem::path droppedPath = droppedFiles[i];
+			std::filesystem::path droppedPath = m_droppedFiles[i];
 
 			currentPath = std::filesystem::absolute(currentPath);
 			droppedPath = std::filesystem::absolute(droppedPath);
@@ -189,6 +204,8 @@ namespace Loopie {
 				DirectoryManager::Copy(droppedPath, targetPath);
 			}
 		}
+
+		m_droppedFiles.clear();
 
 
 		Refresh(true, true, false);

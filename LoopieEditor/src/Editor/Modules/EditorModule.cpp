@@ -176,8 +176,11 @@ namespace Loopie
 				Component* component = components[i];
 				if (!component->GetIsActive())
 					continue;
-				if(component->GetTypeID() == MeshRenderer::GetTypeIDStatic())
-					renderers.push_back(static_cast<MeshRenderer*>(component));
+				if (component->GetTypeID() == MeshRenderer::GetTypeIDStatic()) {
+					MeshRenderer* renderer = static_cast<MeshRenderer*>(component);
+					if(renderer->GetMesh())
+						renderers.push_back(renderer);
+				}
 
 				if (Renderer::IsGizmoActive()) {
 					if(component->GetTypeID() != Camera::GetTypeIDStatic())
