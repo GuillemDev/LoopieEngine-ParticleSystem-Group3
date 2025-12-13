@@ -15,11 +15,11 @@ namespace Loopie {
 		static float GetDeltaTime() { return s_DeltaTime * s_TimeScale; }
 		static float GetDeltaTimeMs() { return s_DeltaTime * 1000.f * s_TimeScale; }
 
-		static float GetFixedDeltaTime() { return s_FixedDeltaTime * s_TimeScale; }
-		static float GetFixedDeltaTimeMs() { return s_FixedDeltaTime * 1000.f * s_TimeScale; }
+		static double GetFixedDeltaTime() { return s_FixedDeltaTime * s_TimeScale; }
+		static double GetFixedDeltaTimeMs() { return s_FixedDeltaTime * 1000.f * s_TimeScale; }
 
-		static float GetUnscaledDeltaTime() { return s_DeltaTime; }
-		static float GetUnscaledDeltaTimeMs() { return s_DeltaTime * 1000.f; }
+		static double GetUnscaledDeltaTime() { return s_DeltaTime; }
+		static double GetUnscaledDeltaTimeMs() { return s_DeltaTime * 1000.f; }
 
 		static float GetUnscaledFixedDeltaTime() { return s_FixedDeltaTime; }
 		static float GetUnscaledFixedDeltaTimeMs() { return s_FixedDeltaTime * 1000.f; }
@@ -36,14 +36,14 @@ namespace Loopie {
 		static float GetTimeScale() { return s_TimeScale; }
 
 	private:
-		static float s_LastFrameTime;
+		static double s_LastFrameTime;
 		static int s_FrameCount;
 
 		//Physic
-		static float s_FixedDeltaTime;
+		static double s_FixedDeltaTime;
 
 		// Game Clock
-		static float s_DeltaTime;
+		static double s_DeltaTime;
 		static float s_TimeScale;
 		static float s_RunTime;
 

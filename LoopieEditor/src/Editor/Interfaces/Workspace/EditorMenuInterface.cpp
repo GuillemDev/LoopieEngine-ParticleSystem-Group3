@@ -207,9 +207,9 @@ namespace Loopie {
 	}
 
 	void EditorMenuInterface::RenderInfoConfigMenu() {
-		
+		ImGui::SetNextWindowFocus();
 
-		ImGui::Begin("Configuration", &m_showInfoConfigMenu, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+		ImGui::Begin("Configuration", &m_showInfoConfigMenu, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse );
 
 		Window& window = Application::GetInstance().GetWindow();
 

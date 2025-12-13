@@ -8,8 +8,8 @@ namespace Loopie {
 		EditorApplication() : Application() {
 			//// Open first the module -> Project CreationSetUp
 			//// Once the Porject is selected, remove the module and add the EditorModule
-
 			AddModule(new ProjectSetupModule());
+			GetWindow().SetLogo("assets/logo/logo.bmp");
 		}
 	};
 }

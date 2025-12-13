@@ -2,11 +2,11 @@
 #include <SDL3/SDL_timer.h>
 namespace Loopie
 {
-	float Time::s_LastFrameTime = 0;
+	double Time::s_LastFrameTime = 0;
 	int Time::s_FrameCount = 0;
-	float Time::s_FixedDeltaTime = 0.2f;
+	double Time::s_FixedDeltaTime = 0.2f;
 	float Time::s_TimeScale = 1;
-	float Time::s_DeltaTime = 0;
+	double Time::s_DeltaTime = 0;
 	float Time::s_RunTime = 0;
 	float Time::s_ExecutionTime = 0;
 
@@ -15,7 +15,7 @@ namespace Loopie
 		Uint64 now = SDL_GetPerformanceCounter();
 		if (s_LastFrameTime != 0)
 		{
-			s_DeltaTime = (float)((now - s_LastFrameTime) / (double)SDL_GetPerformanceFrequency());
+			s_DeltaTime = ((now - s_LastFrameTime) / (double)SDL_GetPerformanceFrequency());
 		}
 		else
 		{

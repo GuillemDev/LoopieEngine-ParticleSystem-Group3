@@ -43,6 +43,9 @@ namespace Loopie {
 		bool IsVsyncEnabled() const { return m_vsyncState; };
 		int GetFramerateLimit() const { return m_targetFramerate; }
 
+
+		void SetLogo(const std::string& filePath);
+
 	private:
 		void LimitFramerate();
 
