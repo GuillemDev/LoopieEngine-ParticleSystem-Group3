@@ -55,16 +55,32 @@ namespace Loopie
 
     void TopBarInterface::Render()
     {
-        ImGui::Begin("##", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, m_toolbarHeight));
+
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoDocking |
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoScrollWithMouse |
+            ImGuiWindowFlags_NoCollapse;
+
+        ImGui::Begin("##TopBar", nullptr, flags);
+
         float avail = ImGui::GetContentRegionAvail().x;
         bool hasStyle = false;
-        float space = (avail - 28 * 3) * 0.5f;
+        float buttonWidth = 20.0f * 3 + ImGui::GetStyle().ItemSpacing.x * 2;
+        float offset = (avail - buttonWidth) * 0.5f;
 
-        ImGui::Dummy({ space, 0 });
-        ImGui::SameLine();
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+
         if (m_actualMode == DEACTIVATED)
         {
-            if (ImGui::ImageButton("play", (ImTextureID)m_playIcon->GetRendererId(), ImVec2(20, 15)))
+            if (ImGui::ImageButton("play", (ImTextureID)m_playIcon->GetRendererId(), ImVec2(15, 15)))
             {
                 Application::GetInstance().GetScene().SaveScene("recoverScene.scene");
                 m_actualMode = PLAY;
@@ -72,7 +88,7 @@ namespace Loopie
         }
         else
         {
-            if (ImGui::ImageButton("stop", (ImTextureID)m_stopIcon->GetRendererId(), ImVec2(20, 15)))
+            if (ImGui::ImageButton("stop", (ImTextureID)m_stopIcon->GetRendererId(), ImVec2(15, 15)))
             {
                 m_actualMode = STOP;
             }
@@ -83,9 +99,9 @@ namespace Loopie
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0, 0.5, 0.75, 1.0));
             hasStyle = true;
         }
-        if (ImGui::ImageButton("pause", (ImTextureID)m_pauseIcon->GetRendererId(), ImVec2(20, 15)) && m_actualMode != DEACTIVATED)
+        if (ImGui::ImageButton("pause", (ImTextureID)m_pauseIcon->GetRendererId(), ImVec2(15, 15)) && m_actualMode != DEACTIVATED)
         {
-            if(m_actualMode == PAUSE)
+            if (m_actualMode == PAUSE)
                 m_actualMode = PLAY;
             else
                 m_actualMode = PAUSE;
@@ -101,7 +117,7 @@ namespace Loopie
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
             hasStyle = true;
         }
-        if (ImGui::ImageButton("nextFrame", (ImTextureID)m_nextFrameIcon->GetRendererId(), ImVec2(20, 15)) && m_actualMode == PAUSE)
+        if (ImGui::ImageButton("nextFrame", (ImTextureID)m_nextFrameIcon->GetRendererId(), ImVec2(15, 15)) && m_actualMode == PAUSE)
         {
             m_actualMode = NEXTFRAME;
         }
@@ -110,8 +126,7 @@ namespace Loopie
             ImGui::PopStyleColor();
             hasStyle = false;
         }
-        ImGui::SameLine();
-        ImGui::Dummy({ space, 0 });
         ImGui::End();
     }
+
 }

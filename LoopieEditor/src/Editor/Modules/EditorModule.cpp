@@ -141,14 +141,41 @@ namespace Loopie
 
 	void EditorModule::OnInterfaceRender()
 	{
-		ImGui::DockSpaceOverViewport();
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+		const float menuBarHeight = ImGui::GetFrameHeight();
+		const float topBarHeight = m_topBar.GetToolbarHeight();
+
+		ImVec2 dockPos = viewport->Pos;
+		ImVec2 dockSize = viewport->Size;
+
+		dockPos.y += menuBarHeight + topBarHeight;
+		dockSize.y -= menuBarHeight + topBarHeight;
+
+		ImGui::SetNextWindowPos(dockPos);
+		ImGui::SetNextWindowSize(dockSize);
+
+		ImGuiWindowFlags dockFlags =
+			ImGuiWindowFlags_NoDocking |
+			ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_NoScrollWithMouse;
+
+		ImGui::Begin("DockSpace", nullptr, dockFlags);
+
+		ImGuiID dockspaceID = ImGui::GetID("EditorDockSpace");
+		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f));
+
+		ImGui::End();
 
 		m_mainMenu.Render();
+		m_topBar.Render();
 		m_inspector.Render();
 		m_console.Render();
 		m_hierarchy.Render();
 		m_assetsExplorer.Render();
-		m_topBar.Render();
 		m_game.Render();
 		m_scene.Render();
 	}

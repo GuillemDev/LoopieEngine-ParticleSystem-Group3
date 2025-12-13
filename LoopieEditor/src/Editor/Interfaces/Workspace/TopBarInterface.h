@@ -21,11 +21,15 @@ namespace Loopie
 		void Init() override {}
 		void Update(const InputEventManager& inputEvent) override;
 		void Render() override;
+
+		float GetToolbarHeight() const { return m_toolbarHeight; }
 	private:
 		std::shared_ptr<Texture> m_playIcon;
 		std::shared_ptr<Texture> m_pauseIcon;
 		std::shared_ptr<Texture> m_stopIcon;
 		std::shared_ptr<Texture> m_nextFrameIcon;
 		DebugGameMode m_actualMode = DEACTIVATED;
+
+		float m_toolbarHeight = 32.0f;
 	};
 }
