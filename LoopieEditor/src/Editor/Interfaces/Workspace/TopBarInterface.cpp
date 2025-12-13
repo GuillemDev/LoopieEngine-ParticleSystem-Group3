@@ -34,7 +34,7 @@ namespace Loopie
 
     void TopBarInterface::Update(const InputEventManager& inputEvent)
     {
-        if (m_actualMode == PAUSE)
+        if (m_actualMode == PAUSE || m_actualMode == DEACTIVATED)
             return;
         if (m_actualMode == STOP)
         {
@@ -55,9 +55,9 @@ namespace Loopie
 
     void TopBarInterface::Render()
     {
-        ImGui::Begin("##", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+        ImGui::Begin("##", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
         float avail = ImGui::GetContentRegionAvail().x;
-
+        bool hasStyle = false;
         float space = (avail - 28 * 3) * 0.5f;
 
         ImGui::Dummy({ space, 0 });
@@ -78,14 +78,37 @@ namespace Loopie
             }
         }
         ImGui::SameLine();
-        if (ImGui::ImageButton("pause", (ImTextureID)m_pauseIcon->GetRendererId(), ImVec2(20, 15)))
+        if (m_actualMode == PAUSE)
         {
-            m_actualMode = PAUSE;
-        }            
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0, 0.5, 0.75, 1.0));
+            hasStyle = true;
+        }
+        if (ImGui::ImageButton("pause", (ImTextureID)m_pauseIcon->GetRendererId(), ImVec2(20, 15)) && m_actualMode != DEACTIVATED)
+        {
+            if(m_actualMode == PAUSE)
+                m_actualMode = PLAY;
+            else
+                m_actualMode = PAUSE;
+        }
+        if (hasStyle)
+        {
+            ImGui::PopStyleColor();
+            hasStyle = false;
+        }
         ImGui::SameLine();
-        if (ImGui::ImageButton("nextFrame", (ImTextureID)m_nextFrameIcon->GetRendererId(), ImVec2(20, 15)))
+        if (m_actualMode == DEACTIVATED)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+            hasStyle = true;
+        }
+        if (ImGui::ImageButton("nextFrame", (ImTextureID)m_nextFrameIcon->GetRendererId(), ImVec2(20, 15)) && m_actualMode == PAUSE)
         {
             m_actualMode = NEXTFRAME;
+        }
+        if (hasStyle)
+        {
+            ImGui::PopStyleColor();
+            hasStyle = false;
         }
         ImGui::SameLine();
         ImGui::Dummy({ space, 0 });
