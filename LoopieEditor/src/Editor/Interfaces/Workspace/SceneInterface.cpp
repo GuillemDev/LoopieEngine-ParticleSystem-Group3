@@ -339,7 +339,7 @@ namespace Loopie {
 			const MeshData& meshData = renderer->GetMesh()->GetData();
 			Triangle triangle;
 
-			unsigned int  triangleCount = meshData.Indices.size() / 3;
+			unsigned int  triangleCount = (unsigned int)meshData.Indices.size() / 3;
 
 			for (unsigned int i = 0; i < triangleCount; i++)
 			{

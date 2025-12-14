@@ -12,8 +12,8 @@ namespace Loopie {
 		static void SetFixedDeltaTimeMs(float ms);
 		static void SetTimeScale(float scale);
 
-		static float GetDeltaTime() { return s_DeltaTime * s_TimeScale; }
-		static float GetDeltaTimeMs() { return s_DeltaTime * 1000.f * s_TimeScale; }
+		static double GetDeltaTime() { return s_DeltaTime * s_TimeScale; }
+		static double GetDeltaTimeMs() { return s_DeltaTime * 1000.f * s_TimeScale; }
 
 		static double GetFixedDeltaTime() { return s_FixedDeltaTime * s_TimeScale; }
 		static double GetFixedDeltaTimeMs() { return s_FixedDeltaTime * 1000.f * s_TimeScale; }
@@ -21,19 +21,19 @@ namespace Loopie {
 		static double GetUnscaledDeltaTime() { return s_DeltaTime; }
 		static double GetUnscaledDeltaTimeMs() { return s_DeltaTime * 1000.f; }
 
-		static float GetUnscaledFixedDeltaTime() { return s_FixedDeltaTime; }
-		static float GetUnscaledFixedDeltaTimeMs() { return s_FixedDeltaTime * 1000.f; }
+		static double GetUnscaledFixedDeltaTime() { return s_FixedDeltaTime; }
+		static double GetUnscaledFixedDeltaTimeMs() { return s_FixedDeltaTime * 1000.f; }
 
-		static float GetLastFrameTime() { return s_LastFrameTime; }
+		static double GetLastFrameTime() { return s_LastFrameTime; }
 
-		static float GetRunTime() { return s_RunTime; }
-		static float GetRunTimeMs() { return s_RunTime * 1000.f; }
+		static double GetRunTime() { return s_RunTime; }
+		static double GetRunTimeMs() { return s_RunTime * 1000.f; }
 
-		static float GetExecutionTime() { return s_ExecutionTime; }
-		static float GetExecutionTimeMs() { return s_ExecutionTime * 1000.f; }
+		static double GetExecutionTime() { return s_ExecutionTime; }
+		static double GetExecutionTimeMs() { return s_ExecutionTime * 1000.f; }
 
 		static int GetFrameCount() { return s_FrameCount; }
-		static float GetTimeScale() { return s_TimeScale; }
+		static double GetTimeScale() { return s_TimeScale; }
 
 	private:
 		static double s_LastFrameTime;
@@ -44,10 +44,10 @@ namespace Loopie {
 
 		// Game Clock
 		static double s_DeltaTime;
-		static float s_TimeScale;
-		static float s_RunTime;
+		static double s_TimeScale;
+		static double s_RunTime;
 
 		//Real Time Clock
-		static float s_ExecutionTime;
+		static double s_ExecutionTime;
 	};
 }

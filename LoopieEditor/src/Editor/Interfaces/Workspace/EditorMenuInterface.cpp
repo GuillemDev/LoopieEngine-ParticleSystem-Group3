@@ -251,7 +251,7 @@ namespace Loopie {
 			}
 
 
-			float ms = Time::GetDeltaTimeMs();
+			float ms = (float)Time::GetDeltaTimeMs();
 			float fps = ms > 0.0f ? 1000.0f / ms : 0.0f;
 
 			if (m_fpsLog.size() >= LOG_SIZE)

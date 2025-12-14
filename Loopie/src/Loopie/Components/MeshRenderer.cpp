@@ -197,10 +197,7 @@ namespace Loopie {
 		if (posElem->Type == GLVariableType::NONE)
 			return;
 
-		Transform* transform = GetTransform();
-		matrix4 modelMatrix = transform->GetLocalToWorldMatrix();
-
-		unsigned int  triangleCount = data.Indices.size() / 3;
+		unsigned int  triangleCount = (unsigned int)data.Indices.size() / 3;
 
 		for (unsigned int i = 0; i + 1 < triangleCount; i += 2) {
 			Triangle t1, t2;
@@ -232,12 +229,9 @@ namespace Loopie {
 		if (posElem->Type == GLVariableType::NONE)
 			return;
 
-		Transform* transform = GetTransform();
-		matrix4 modelMatrix = transform->GetLocalToWorldMatrix();
-
 		Triangle t;
 
-		unsigned int  triangleCount = data.Indices.size() / 3;
+		unsigned int  triangleCount = (unsigned int)data.Indices.size() / 3;
 
 		for (unsigned int i = 0; i < triangleCount; i ++) {
 			

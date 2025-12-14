@@ -120,8 +120,8 @@ namespace Loopie
             m_yaw += -m_inputRotation.x;
             m_pitch += m_inputRotation.y;
 
-            m_inputDirection.x *= Time::GetDeltaTime();
-            m_inputDirection.z *= Time::GetDeltaTime();
+            m_inputDirection.x *= (float)Time::GetDeltaTime();
+            m_inputDirection.z *= (float)Time::GetDeltaTime();
 
             m_inputDirection += m_panDirection/10.f;
             m_inputDirection.z += m_zoomInput;

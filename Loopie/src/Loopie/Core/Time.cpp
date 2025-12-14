@@ -5,10 +5,10 @@ namespace Loopie
 	double Time::s_LastFrameTime = 0;
 	int Time::s_FrameCount = 0;
 	double Time::s_FixedDeltaTime = 0.2f;
-	float Time::s_TimeScale = 1;
+	double Time::s_TimeScale = 1;
 	double Time::s_DeltaTime = 0;
-	float Time::s_RunTime = 0;
-	float Time::s_ExecutionTime = 0;
+	double Time::s_RunTime = 0;
+	double Time::s_ExecutionTime = 0;
 
 	void Time::CalculateFrame()
 	{
@@ -21,7 +21,7 @@ namespace Loopie
 		{
 			s_DeltaTime = 0.0f;
 		}
-		s_LastFrameTime = now;
+		s_LastFrameTime = (double)now;
 
 		s_RunTime += GetDeltaTime();
 		s_ExecutionTime += GetUnscaledDeltaTime();
