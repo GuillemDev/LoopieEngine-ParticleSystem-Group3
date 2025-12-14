@@ -34,7 +34,7 @@ namespace Loopie {
 			switch (m_mode)
 			{
 			case InspectorMode::EntityMode:
-				DrawEntityInspector(HierarchyInterface::s_SelectedEntity);
+				DrawEntityInspector(HierarchyInterface::s_SelectedEntity.lock());
 				break;
 			case InspectorMode::ImportMode:
 				DrawFileImportSettings(AssetsExplorerInterface::s_SelectedFile);

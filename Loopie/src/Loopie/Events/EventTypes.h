@@ -8,6 +8,6 @@ namespace Loopie {
 
     enum class EngineNotification {
         OnProjectChange,
-        OnAssetRegistryReload
+        OnAssetRegistryReload,
     };
 }

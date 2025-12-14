@@ -30,7 +30,7 @@ namespace Loopie {
 
 	public:
 
-		static std::shared_ptr<Entity> s_SelectedEntity;
+		static std::weak_ptr<Entity> s_SelectedEntity;
 		static Event<OnEntityOrFileNotification> s_OnEntitySelected;
 	private:
 		Scene* m_scene = nullptr;

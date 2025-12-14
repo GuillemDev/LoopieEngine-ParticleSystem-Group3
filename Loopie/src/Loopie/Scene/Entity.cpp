@@ -143,7 +143,7 @@ namespace Loopie {
 		m_isActive = active;
 	}
 
-	void Entity::SetParent(const std::shared_ptr<Entity>& parent)
+	void Entity::SetParent(const std::shared_ptr<Entity>& parent, bool keepLocal)
 	{
 		// Prevents parenting to its own son
 		if (parent == shared_from_this())
@@ -167,6 +167,12 @@ namespace Loopie {
 			}
 		}
 
+		Transform* transform = GetTransform();
+		matrix4 worldMatrix;
+		if (!keepLocal && transform)
+		{
+			worldMatrix = transform->GetLocalToWorldMatrix();
+		}
 
 		std::shared_ptr<Entity> currentParent = m_parentEntity.lock();
 		if (currentParent)
@@ -179,6 +185,15 @@ namespace Loopie {
 		if (parent && (parent != shared_from_this()))
 		{
 			parent->AddChild(shared_from_this());
+		}
+
+		if (!keepLocal && transform)
+		{
+			transform->SetWorldMatrix(worldMatrix);
+		}
+		else if (transform)
+		{
+			transform->MarkWorldDirty();
 		}
 	}
 

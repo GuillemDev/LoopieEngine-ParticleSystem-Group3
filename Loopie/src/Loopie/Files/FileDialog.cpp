@@ -305,4 +305,19 @@ DialogResult FileDialog::SelectFolders(const std::filesystem::path& defaultPath)
 }
 
     #endif
+
+bool FileDialog::OpenInExplorer(const std::filesystem::path& path)
+{
+    if (path.empty() || !std::filesystem::exists(path))
+        return false;
+
+    std::string uri = "file://" + path.u8string();
+
+    if (std::filesystem::is_regular_file(path)) {
+        uri = "file://" + path.parent_path().u8string();
+    }
+
+    return SDL_OpenURL(uri.c_str()) == 0;
+}
+
 }

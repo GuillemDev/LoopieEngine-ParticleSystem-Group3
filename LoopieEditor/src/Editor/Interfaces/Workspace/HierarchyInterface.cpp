@@ -8,7 +8,7 @@
 #include <imgui.h>
 
 namespace Loopie {
-	std::shared_ptr<Entity> HierarchyInterface::s_SelectedEntity = nullptr;
+	std::weak_ptr<Entity> HierarchyInterface::s_SelectedEntity;
 	Event<OnEntityOrFileNotification> HierarchyInterface::s_OnEntitySelected;
 
 	HierarchyInterface::HierarchyInterface() {
@@ -80,7 +80,7 @@ namespace Loopie {
 
 		if (!hasChildren)
 			flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-		if (s_SelectedEntity == entity)
+		if (s_SelectedEntity.lock() == entity)
 			flags |= ImGuiTreeNodeFlags_Selected;
 
 		bool opened = ImGui::TreeNodeEx((void*)entity.get(), flags, entity->GetName().c_str());
@@ -138,7 +138,7 @@ namespace Loopie {
 
 		if (ImGui::MenuItem("Delete",nullptr, false, entity != nullptr))
 		{
-			if (s_SelectedEntity == entity)
+			if (s_SelectedEntity.lock() == entity)
 				SelectEntity(nullptr);
 			m_scene->RemoveEntity(entity->GetUUID());
 		}
@@ -165,12 +165,13 @@ namespace Loopie {
 
 	void HierarchyInterface::HotKeysSelectedEntiy(const InputEventManager& inputEvent)
 	{
-		if (!s_SelectedEntity) {
+		auto selectedEntity = s_SelectedEntity.lock();
+		if (!selectedEntity) {
 			return;
 		}
 
 		if (inputEvent.GetKeyStatus(SDL_SCANCODE_DELETE) == KeyState::DOWN) {
-			m_scene->RemoveEntity(s_SelectedEntity->GetUUID());
+			m_scene->RemoveEntity(selectedEntity->GetUUID());
 			SelectEntity(nullptr);
 		}
 

@@ -97,7 +97,7 @@ namespace Loopie {
 		void SetName(const std::string& name);
 		void SetIsActive(bool active);
 		// If a parent is set up, then it means this is its child and will update it accordingly
-		void SetParent(const std::shared_ptr<Entity>& parent);
+		void SetParent(const std::shared_ptr<Entity>& parent, bool keepLocal = true);
 
 	private:
 		void GetRecursiveChildren(std::vector<std::shared_ptr<Entity>>& childrenEntities);

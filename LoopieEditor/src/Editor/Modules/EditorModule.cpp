@@ -35,13 +35,10 @@ namespace Loopie
 
 		JsonData data = Json::ReadFromFile(Application::GetInstance().m_activeProject.GetConfigPath());
 		JsonResult<std::string> result = data.Child("last_scene").GetValue<std::string>();
-		if (result.Found)
-			scene->ReadAndLoadSceneFile(result.Result);
-		else {
-			CreateBakerHouse();
-
-			scene->CreateEntity({ 0,0,-10 }, { 1,0,0,0 }, { 1,1,1 }, nullptr, "MainCamera")->AddComponent<Camera>();
-			scene->CreateEntity({ 0,0,-20 }, { 1,0,0,0 }, { 1,1,1 }, nullptr, "SecondaryCamera")->AddComponent<Camera>();
+		if (!result.Found || !scene->ReadAndLoadSceneFile(result.Result))
+		{
+			CreateCity();
+			scene->CreateEntity({ 0,1,-10 }, { 1,0,0,0 }, { 1,1,1 }, nullptr, "MainCamera")->AddComponent<Camera>();
 		}
 		
 
@@ -194,6 +191,7 @@ namespace Loopie
 		std::vector<MeshRenderer*> renderers;
 		renderers.reserve(1);
 
+		auto selectedEntity = HierarchyInterface::s_SelectedEntity.lock();
 		for (const auto& entity : entities)
 		{
 			if (!entity->GetIsActive())
@@ -222,7 +220,7 @@ namespace Loopie
 			{
 				MeshRenderer* renderer = renderers[i];
 
-				if (!Renderer::IsGizmoActive() || entity != HierarchyInterface::s_SelectedEntity) {
+				if (!Renderer::IsGizmoActive() || entity != selectedEntity) {
 					Renderer::AddRenderItem(renderer->GetMesh()->GetVAO(), renderer->GetMaterial(), entity->GetTransform());
 				}
 				else {
@@ -245,9 +243,9 @@ namespace Loopie
 		}
 		Renderer::DisableStencil();
 		if (Renderer::IsGizmoActive()) {
-			if (HierarchyInterface::s_SelectedEntity)
+			if (selectedEntity)
 			{
-				Camera* cam = HierarchyInterface::s_SelectedEntity->GetComponent<Camera>();
+				Camera* cam = selectedEntity->GetComponent<Camera>();
 				if(cam)
 					cam->RenderGizmo();
 			}
@@ -259,6 +257,12 @@ namespace Loopie
 	{
 		m_scene.ChargeModel("assets/models/BakerHouse.fbx");
 		m_scene.ChargeTexture("assets/textures/Baker_house.png");
+	}
+
+	void EditorModule::CreateCity()
+	{
+		m_scene.ChargeModel("assets/models/Street environment_V01.fbx");
+		//m_scene.ChargeTexture("assets/textures/Baker_house.png");
 	}
 
 	/*void EditorModule::MousePick(Camera* camera)

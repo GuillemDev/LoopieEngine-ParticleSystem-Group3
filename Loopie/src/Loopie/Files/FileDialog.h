@@ -32,5 +32,7 @@ namespace Loopie {
 
         static DialogResult SelectFolder(const std::filesystem::path& defaultPath = "");
         static DialogResult SelectFolders(const std::filesystem::path& defaultPath = "");
+
+        static bool OpenInExplorer(const std::filesystem::path& path);
 	};
 }

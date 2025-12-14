@@ -97,8 +97,8 @@ namespace Loopie {
 			ImGui::SetCursorPos(cursorPos);
 			DrawHelperBar();
 
-			if (HierarchyInterface::s_SelectedEntity) {
-				std::shared_ptr<Entity> selectedEntity = HierarchyInterface::s_SelectedEntity;
+			auto selectedEntity = HierarchyInterface::s_SelectedEntity.lock();
+			if (selectedEntity) {
 				auto transform = selectedEntity->GetTransform();
 
 				glm::mat4 worldMatrix = transform->GetLocalToWorldMatrix();
@@ -138,12 +138,13 @@ namespace Loopie {
 
 	void SceneInterface::HotKeysSelectedEntiy(const InputEventManager& inputEvent)
 	{
-		if (!HierarchyInterface::s_SelectedEntity) {
+		auto selectedEntity = HierarchyInterface::s_SelectedEntity.lock();
+		if (!selectedEntity) {
 			return;
 		}
 
 		if (inputEvent.GetKeyStatus(SDL_SCANCODE_DELETE) == KeyState::DOWN) {
-			Application::GetInstance().GetScene().RemoveEntity(HierarchyInterface::s_SelectedEntity->GetUUID());
+			Application::GetInstance().GetScene().RemoveEntity(selectedEntity->GetUUID());
 			HierarchyInterface::SelectEntity(nullptr);
 		}
 
@@ -238,8 +239,9 @@ namespace Loopie {
 		MeshImporter::ImportModel(modelPath, meta);
 		std::shared_ptr<Entity> parent;
 
+		auto selected = HierarchyInterface::s_SelectedEntity.lock();
 		if (meta.CachesPath.size() > 0) {
-			parent = Application::GetInstance().GetScene().CreateEntity("ModelEntity", HierarchyInterface::s_SelectedEntity);
+			parent = Application::GetInstance().GetScene().CreateEntity("ModelEntity", selected);
 		}
 		for (size_t i = 0; i < meta.CachesPath.size(); i++)
 		{			
@@ -247,7 +249,7 @@ namespace Loopie {
 			if (mesh) {
 				std::shared_ptr<Entity> newEntity;
 				if (!parent) {
-					newEntity = Application::GetInstance().GetScene().CreateEntity(mesh->GetData().Name,HierarchyInterface::s_SelectedEntity);
+					newEntity = Application::GetInstance().GetScene().CreateEntity(mesh->GetData().Name, selected);
 				}else
 					newEntity = Application::GetInstance().GetScene().CreateEntity(mesh->GetData().Name, parent);
 
@@ -266,8 +268,9 @@ namespace Loopie {
 		TextureImporter::ImportImage(texturePath, meta);
 		std::shared_ptr<Texture> texture = ResourceManager::GetTexture(meta);
 		if (texture) {
-			if (HierarchyInterface::s_SelectedEntity != nullptr) {
-				MeshRenderer* renderer = HierarchyInterface::s_SelectedEntity->GetComponent<MeshRenderer>();
+			auto selectedEntity = HierarchyInterface::s_SelectedEntity.lock();
+			if (selectedEntity != nullptr) {
+				MeshRenderer* renderer = selectedEntity->GetComponent<MeshRenderer>();
 				if (renderer) {
 					if (renderer->GetMaterial())
 						renderer->GetMaterial()->SetTexture(texture);
@@ -292,8 +295,9 @@ namespace Loopie {
 		MaterialImporter::ImportMaterial(materialPath, meta);
 		std::shared_ptr<Material> material = ResourceManager::GetMaterial(meta);
 		if (material) {
-			if (HierarchyInterface::s_SelectedEntity != nullptr) {
-				MeshRenderer* renderer = HierarchyInterface::s_SelectedEntity->GetComponent<MeshRenderer>();
+			auto selectedEntity = HierarchyInterface::s_SelectedEntity.lock();
+			if (selectedEntity != nullptr) {
+				MeshRenderer* renderer = selectedEntity->GetComponent<MeshRenderer>();
 				if (renderer) {
 					renderer->SetMaterial(material);
 				}

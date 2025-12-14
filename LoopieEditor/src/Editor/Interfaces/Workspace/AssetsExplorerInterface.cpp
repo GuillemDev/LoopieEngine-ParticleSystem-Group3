@@ -4,6 +4,7 @@
 #include "Loopie/Helpers/LoopieHelpers.h"
 #include "Loopie/Core/Log.h"
 #include "Loopie/Files/DirectoryManager.h"
+#include "Loopie/Files/FileDialog.h"
 #include "Loopie/Resources/ResourceManager.h"
 #include "Loopie/Resources/Types/Texture.h"
 
@@ -693,12 +694,21 @@ namespace Loopie {
 			Refresh();
 		}
 
+		ImGui::Separator();
+
 		if (ImGui::MenuItem("Rename"))
 		{
 			m_renamingFile = file;
 			std::string filename = file.stem().string();
 			strncpy(m_renameBuffer, filename.c_str(), sizeof(m_renameBuffer));
 			ImGui::OpenPopup("RenameFilePopup");
+		}
+
+		ImGui::Separator();
+
+		if(ImGui::MenuItem("Show in Explorer"))
+		{
+			FileDialog::OpenInExplorer(file);
 		}
 	}
 
@@ -714,6 +724,13 @@ namespace Loopie {
 		if (ImGui::MenuItem("Create Scene"))
 		{
 			CreateScene(m_currentDirectory, "NewScene");
+		}
+
+		ImGui::Separator();
+
+		if (ImGui::MenuItem("Show in Explorer"))
+		{
+			FileDialog::OpenInExplorer(m_currentDirectory);
 		}
 
 	}

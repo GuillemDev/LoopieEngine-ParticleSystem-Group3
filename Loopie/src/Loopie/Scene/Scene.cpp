@@ -242,7 +242,7 @@ namespace Loopie {
 		return siblingEntities;
 	}
 
-	void Scene::ReadAndLoadSceneFile(std::string filePath, bool safeSceneAsLastLoaded)
+	bool Scene::ReadAndLoadSceneFile(std::string filePath, bool safeSceneAsLastLoaded)
 	{
 		m_entities.clear();
 		m_octree->Clear();
@@ -257,7 +257,7 @@ namespace Loopie {
 		if (saveData.IsEmpty())
 		{
 			Log::Error("Failed to load scene file");
-			return;
+			return false;
 		}
 
 		JsonNode rootNode = saveData.Child("entities");
@@ -265,7 +265,7 @@ namespace Loopie {
 		if (!rootNode.IsValid() || !rootNode.IsArray())
 		{
 			Log::Error("No entities array in scene file.");
-			return;
+			return true;
 		}
 
 		// First iteration: Create all entities
@@ -369,6 +369,8 @@ namespace Loopie {
 		}
 
 		m_octree->Rebuild();
+
+		return true;
 	}
 
 	std::string Scene::GetUniqueName(std::shared_ptr<Entity> parentEntity, const std::string& desiredName)

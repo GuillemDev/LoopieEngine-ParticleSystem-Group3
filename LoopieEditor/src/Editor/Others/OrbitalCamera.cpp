@@ -67,10 +67,11 @@ namespace Loopie
         }
         if (inputEvent.GetKeyStatus(SDL_SCANCODE_F) == KeyState::DOWN)
         {
-            if (HierarchyInterface::s_SelectedEntity != nullptr)
+			auto selectedEntity = HierarchyInterface::s_SelectedEntity.lock();
+            if (selectedEntity != nullptr)
             {
-                m_entityToPivot = HierarchyInterface::s_SelectedEntity;
-                MeshRenderer* renderer = HierarchyInterface::s_SelectedEntity->GetComponent<MeshRenderer>();
+                m_entityToPivot = selectedEntity;
+                MeshRenderer* renderer = selectedEntity->GetComponent<MeshRenderer>();
                 if (renderer)
                 {
                     vec3 objectScale = renderer->GetWorldAABB().GetSize();
