@@ -64,6 +64,10 @@ namespace Loopie {
 			else if (component->GetTypeID() == MeshRenderer::GetTypeIDStatic()) {
 				DrawMeshRenderer(static_cast<MeshRenderer*>(component));
 			}
+			/*else if (component->GetTypeID() == ParticlesComponent::GetTypeIDStatic())
+			{
+				DrawParticlesComponent(static_cast<ParticlesComponent*>(component))
+			}*/
 		}
 		AddComponent(entity);
 	}
@@ -330,9 +334,61 @@ namespace Loopie {
 		}
 	}
 
+	void InspectorInterface::DrawParticlesComponent(ParticlesComponent* particlesComponent)
+	{
+		if (!particlesComponent)
+			return;
+
+		if (ImGui::CollapsingHeader("Particle System")) {
+			
+		}
+	}
+
 	void InspectorInterface::AddComponent(const std::shared_ptr<Entity>& entity)
 	{
-		
+		if (!entity)
+			return;
+
+		ImGui::Separator();
+
+		static const char* previewLabel = "Add Component...";
+		static int selectedIndex = -1;
+
+		if (ImGui::BeginCombo("##AddComponentCombo", previewLabel))
+		{
+			if (!entity->HasComponent<Camera>())
+			{
+				if (ImGui::Selectable("Camera"))
+				{
+					entity->AddComponent<Camera>();
+					ImGui::EndCombo();
+					return;
+				}
+			}
+
+			if (ImGui::Selectable("Mesh Renderer"))
+			{
+				entity->AddComponent<MeshRenderer>();
+				ImGui::EndCombo();
+				return;
+			}
+
+			if (ImGui::Selectable("Particle System"))
+			{
+				//entity->AddComponent<ParticlesComponent>();
+				ImGui::EndCombo();
+				return;
+			}
+			
+			//if (ImGui::Selectable(""))
+			//     {
+			//         entity->AddComponent<>();
+			//         ImGui::EndCombo();
+			//         return;
+			//     }
+
+			ImGui::EndCombo();
+		}
 	}
 
 	void InspectorInterface::DrawMaterialImportSettings(const std::filesystem::path& path)
