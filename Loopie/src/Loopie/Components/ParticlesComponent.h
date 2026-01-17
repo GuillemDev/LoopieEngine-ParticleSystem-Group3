@@ -13,7 +13,7 @@ namespace Loopie
     public:
         DEFINE_TYPE(ParticlesComponent)
 
-        ParticlesComponent();
+            ParticlesComponent();
         ~ParticlesComponent();
         void Init()override;
 
@@ -28,6 +28,19 @@ namespace Loopie
     private:
 
     public:
+        // General
+        float m_duration = 1.0;
+        float m_lifetime = 1.0;
+        float m_speed = 1.0;
+        float m_size = 1.0;
+        bool m_looping = true;
+
+        // Texture Animation
+        bool m_isActive = true;
+        int m_rows = 1;
+        int m_columns = 1;
+        int m_cycles = 1;
+
 
         //emitters: vector<EmitterInstance>
         //resource : ParticleSystem * r

@@ -391,6 +391,7 @@ namespace Loopie {
 		ImGui::PushID(particlesComponent);
 
 		bool open = ImGui::CollapsingHeader("Paticles Component");
+		
 
 		if (RemoveComponent(particlesComponent)) {
 			ImGui::PopID();
@@ -398,7 +399,105 @@ namespace Loopie {
 		}
 
 		if (open) {
-	
+			float columnWidth = ImGui::GetContentRegionAvail().x;
+			//Checkbox ???
+			
+
+			if (ImGui::CollapsingHeader("Start Color"))
+			{
+				ImVec4 color = ImVec4(0.2f, 0.9f, 0.6f, 1.0f);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
+
+				ImGui::ColorPicker4(
+					"##picker",
+					(float*)&color,
+					ImGuiColorEditFlags_PickerHueBar |
+					ImGuiColorEditFlags_NoInputs |
+					ImGuiColorEditFlags_NoSidePreview
+				);
+
+				ImGui::PopStyleVar(2);
+			}
+			if (ImGui::CollapsingHeader("Emission"))
+			{
+
+			}
+			if (ImGui::CollapsingHeader("Shape"))
+			{
+
+			}
+			if (ImGui::CollapsingHeader("Color Over Time"))
+			{
+				// A "+" button will add as many dropdowns as the user needs
+
+				ImVec4 colorOverTime = ImVec4(0.2f, 0.9f, 0.6f, 1.0f);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
+
+				ImGui::ColorPicker4(
+					"##picker",
+					(float*)&colorOverTime,
+					ImGuiColorEditFlags_PickerHueBar |
+					ImGuiColorEditFlags_NoInputs |
+					ImGuiColorEditFlags_NoSidePreview
+				);
+
+				ImGui::PopStyleVar(2);
+			}
+			if (ImGui::CollapsingHeader("Texture Animation"))
+			{
+				if (ImGui::BeginTable("TextureAnimation", 2,
+					ImGuiTableFlags_SizingFixedFit))
+				{
+					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+					// Active
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Active");
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Checkbox("##active", &particlesComponent->m_isActive);
+
+					// Rows
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Rows");
+					ImGui::TableSetColumnIndex(1);
+					ImGui::InputInt("##rows", &particlesComponent->m_rows);
+
+					// Columns
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Columns");
+					ImGui::TableSetColumnIndex(1);
+					ImGui::InputInt("##columns", &particlesComponent->m_columns);
+
+					// Cycles
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Cycles");
+					ImGui::TableSetColumnIndex(1);
+					ImGui::InputInt("##cycles", &particlesComponent->m_cycles);
+
+					ImGui::EndTable();
+				}
+			}
+			if (ImGui::CollapsingHeader("Render"))
+			{
+				//Select the image the particle system will use.
+			}
+			if (ImGui::CollapsingHeader("Bounding Box"))
+			{
+
+			}
 		}
 
 		ImGui::PopID();
