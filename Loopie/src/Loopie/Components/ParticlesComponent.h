@@ -5,6 +5,7 @@
 #include "Loopie/Events/EventTypes.h"
 
 #include <memory>
+
 namespace Loopie
 {
     class ParticlesComponent : public Component
@@ -12,17 +13,25 @@ namespace Loopie
     public:
         DEFINE_TYPE(ParticlesComponent)
 
-            ParticlesComponent();
-        ~ParticlesComponent() = default;
+        ParticlesComponent();
+        ~ParticlesComponent();
         void Init()override;
+
+        void Save();
+        void Load();
+        void Update()override;
+        void Reset();
+
+        JsonNode Serialize(JsonNode& parent) const override;
+        void Deserialize(const JsonNode& data) override;
 
     private:
 
     public:
-        Event<TransformNotification> m_transformNotifier; // Preguntar a adri como van los Events
 
         //emitters: vector<EmitterInstance>
         //resource : ParticleSystem * r
+
     private:
 
     };
