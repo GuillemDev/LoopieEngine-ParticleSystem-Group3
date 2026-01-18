@@ -392,27 +392,104 @@ namespace Loopie {
 
 		bool open = ImGui::CollapsingHeader("Paticles Component");
 		
-
 		if (RemoveComponent(particlesComponent)) {
 			ImGui::PopID();
 			return;
 		}
 
 		if (open) {
+			// --- General ---
 			float columnWidth = ImGui::GetContentRegionAvail().x;
-			//Checkbox ???
-			
+			if (ImGui::BeginTable("General", 2, ImGuiTableFlags_SizingFixedFit))
+			{
+				ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+				ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Looping");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##looping", &particlesComponent->m_looping);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Play On Awake");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Checkbox("##playOnAwake", &particlesComponent->m_playOnAwake);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Duration");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat("##duration", &particlesComponent->m_duration);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Lifetime");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat("##lifetime", &particlesComponent->m_lifeTime);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Speed");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat("##speed", &particlesComponent->m_speed);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Size");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragFloat("##size", &particlesComponent->m_size);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Maximum Particles");
+				ImGui::TableSetColumnIndex(1);
+				ImGui::DragInt("##maxParticles", &particlesComponent->m_maxParticles);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Simulation Space");
+				ImGui::TableSetColumnIndex(1);
+
+				int currentSimulationSpace = (int)(particlesComponent->m_simulationSpace);
+				const char* simulationSpaceOptions[] = { "World", "Local" };
+
+				if (ImGui::BeginCombo("##SimulationSpace", simulationSpaceOptions[currentSimulationSpace]))
+				{
+					for (int simulationSpace = 0; simulationSpace < IM_ARRAYSIZE(simulationSpaceOptions); simulationSpace++)
+					{
+						bool isSimulationSpaceSelected = (currentSimulationSpace == simulationSpace);
+						if (ImGui::Selectable(simulationSpaceOptions[simulationSpace], isSimulationSpaceSelected))
+						{
+							currentSimulationSpace = simulationSpace;
+							particlesComponent->m_simulationSpace = (ParticlesComponent::SimulationSpace)(simulationSpace);
+						}
+						if (isSimulationSpaceSelected) { ImGui::SetItemDefaultFocus(); }
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::EndTable();
+			}
+			// --- Start Color ---
 			if (ImGui::CollapsingHeader("Start Color"))
 			{
-				vec4& startColor = particlesComponent->m_color;
+				vec4& startingColor = particlesComponent->m_startingColor;
 
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
 
 				ImGui::SetNextItemWidth(275.0f);
 
-				ImGui::ColorPicker4("##start_color_picker", (float*)&startColor, ImGuiColorEditFlags_PickerHueBar|ImGuiColorEditFlags_NoInputs|ImGuiColorEditFlags_NoSidePreview);
+				ImGui::ColorPicker4("##start_color_picker", (float*)&startingColor, ImGuiColorEditFlags_PickerHueBar|ImGuiColorEditFlags_NoInputs|ImGuiColorEditFlags_NoSidePreview);
 
 				ImGui::PopStyleVar(2);
 
@@ -427,8 +504,7 @@ namespace Loopie {
 
 					ImGui::TableSetColumnIndex(0);
 
-					float textOffsetY =
-						(ImGui::GetFrameHeight() - ImGui::GetTextLineHeight()) * 0.5f;
+					float textOffsetY = (ImGui::GetFrameHeight() - ImGui::GetTextLineHeight()) * 0.5f;
 
 					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + textOffsetY);
 					ImGui::Text("RGBA");
@@ -437,10 +513,10 @@ namespace Loopie {
 
 					ImGui::PushItemWidth(45.0f);
 
-					ImGui::DragFloat("##R", &startColor.x, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
-					ImGui::DragFloat("##G", &startColor.y, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
-					ImGui::DragFloat("##B", &startColor.z, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
-					ImGui::DragFloat("##A", &startColor.w, 0.01f, 0.0f, 1.0f);
+					ImGui::DragFloat("##R", &startingColor.x, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+					ImGui::DragFloat("##G", &startingColor.y, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+					ImGui::DragFloat("##B", &startingColor.z, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+					ImGui::DragFloat("##A", &startingColor.w, 0.01f, 0.0f, 1.0f);
 
 					ImGui::PopItemWidth();
 
@@ -449,19 +525,107 @@ namespace Loopie {
 					ImGui::SameLine(0.0f, 10.0f);
 					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonOffsetY);
 
-					ImGui::ColorButton("##color_preview", ImVec4(startColor.x, startColor.y, startColor.z, startColor.w), ImGuiColorEditFlags_NoTooltip, ImVec2(16, 16));
+					ImGui::ColorButton("##color_preview", ImVec4(startingColor.x, startingColor.y, startingColor.z, startingColor.w), ImGuiColorEditFlags_NoTooltip, ImVec2(16, 16));
 
 					ImGui::EndTable();
 				}
 			}
+			// --- Emission ---
 			if (ImGui::CollapsingHeader("Emission"))
 			{
-				
+				if (ImGui::BeginTable("Emission", 2, ImGuiTableFlags_SizingFixedFit))
+				{
+					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Emission Rate");
+					ImGui::TableSetColumnIndex(1);
+					ImGui::DragFloat("##emissionRate", &particlesComponent->m_emissionRate, 1, 0, 100);
+
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+
+					if (ImGui::Button(" Add Burst "))
+					{
+						
+					}
+					ImGui::Spacing();
+
+					ImGui::EndTable();
+				}
 			}
+			// --- Shape ---
 			if (ImGui::CollapsingHeader("Shape"))
 			{
+				if (ImGui::BeginTable("Shape", 2, ImGuiTableFlags_SizingFixedFit))
+				{
+					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Shape");
+					ImGui::TableSetColumnIndex(1);
+
+					int currentShapeIndex = (int)(particlesComponent->m_shape);
+					const char* shapeOptions[] = { "Box", "Sphere" };
+
+					if (ImGui::BeginCombo("##ShapeOptions", shapeOptions[currentShapeIndex]))
+					{
+						for (int shape = 0; shape < IM_ARRAYSIZE(shapeOptions); shape++)
+						{
+							bool isShapeSelected = (currentShapeIndex == shape);
+							if (ImGui::Selectable(shapeOptions[shape], isShapeSelected))
+							{
+								currentShapeIndex = shape;
+								particlesComponent->m_shape = (ParticlesComponent::Shape)(shape);
+							}
+							if (isShapeSelected) { ImGui::SetItemDefaultFocus(); }
+						}
+						ImGui::EndCombo();
+					}
+					if (currentShapeIndex == (int)ParticlesComponent::Shape::BOX)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::AlignTextToFramePadding();
+						ImGui::Text("Size");
+						ImGui::TableSetColumnIndex(1);
+						ImGui::PushItemWidth(45.0f);
+
+						vec3& squareSize = particlesComponent->m_sizeBox;
+						ImGui::Text("X"); ImGui::SameLine();
+						ImGui::DragFloat("##X", &squareSize.x, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+						ImGui::Text("Y"); ImGui::SameLine();
+						ImGui::DragFloat("##Y", &squareSize.y, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+						ImGui::Text("Z"); ImGui::SameLine();
+						ImGui::DragFloat("##Z", &squareSize.z, 0.01f, 0.0f, 1.0f); 
+					}
+					else if (currentShapeIndex == (int)ParticlesComponent::Shape::SPHERE)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::AlignTextToFramePadding();
+						ImGui::Text("Emit From Shell");
+						ImGui::TableSetColumnIndex(1);
+						ImGui::Checkbox("##emitFromShell", &particlesComponent->m_emitFromShell);
+
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						ImGui::AlignTextToFramePadding();
+						ImGui::Text("Radius");
+						ImGui::TableSetColumnIndex(1);
+						ImGui::DragFloat("##radius", &particlesComponent->m_sphereRadius);
+					}
+					ImGui::EndTable();
+				}
 			}
+			// --- Color Over Time ---
 			if (ImGui::CollapsingHeader("Color Over Time"))
 			{
 				// A "+" button will add as many dropdowns as the user needs
@@ -481,12 +645,12 @@ namespace Loopie {
 
 				ImGui::PopStyleVar(2);
 			}
+			// --- Texture Animation ---
 			if (ImGui::CollapsingHeader("Texture Animation"))
 			{
-				if (ImGui::BeginTable("TextureAnimation", 2,
-					ImGuiTableFlags_SizingFixedFit))
+				if (ImGui::BeginTable("TextureAnimation", 2, ImGuiTableFlags_SizingFixedFit))
 				{
-					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
 					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
 					// Active
@@ -524,17 +688,23 @@ namespace Loopie {
 					ImGui::EndTable();
 				}
 			}
+			// --- Render ---
 			if (ImGui::CollapsingHeader("Render"))
 			{
-				//ImGui::Image(emitter->particleTexture,ImVec2(64, 64));
+				/*if (texture exists)
+				{
+					ImGui::Spacing();
+					ImGui::Image(emitter->particleTexture,ImVec2(64, 64));
+				}*/
+			
 				ImGui::Spacing();
 				
 				if (ImGui::Button(" New Sprite "))
 				{
-					ImGui::OpenPopup("SpritePickerPopup");
+					ImGui::OpenPopup("SpritePickerPopup"); // --- Needs testing ---
 				}
 
-				if (ImGui::BeginPopup("SpritePickerPopup"))
+				if (ImGui::BeginPopup("SpritePickerPopup")) 
 				{
 					namespace fs = std::filesystem;
 					const fs::path folder = "Assets/Particles/";
@@ -564,10 +734,9 @@ namespace Loopie {
 					{
 						ImGui::TextDisabled("Folder not found");
 					}
-
 					ImGui::EndPopup();
 				}
-
+				ImGui::Spacing();
 			}
 			if (ImGui::CollapsingHeader("Bounding Box"))
 			{
