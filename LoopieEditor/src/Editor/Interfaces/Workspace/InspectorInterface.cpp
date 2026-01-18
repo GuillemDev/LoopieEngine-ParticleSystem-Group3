@@ -1,4 +1,4 @@
-#include "InspectorInterface.h"
+﻿#include "InspectorInterface.h"
 #include "Editor/Interfaces/Workspace/HierarchyInterface.h"
 #include "Editor/Interfaces/Workspace/AssetsExplorerInterface.h"
 
@@ -405,24 +405,58 @@ namespace Loopie {
 
 			if (ImGui::CollapsingHeader("Start Color"))
 			{
-				ImVec4 color = ImVec4(0.2f, 0.9f, 0.6f, 1.0f);
+				vec4& startColor = particlesComponent->m_color;
 
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
 
-				ImGui::ColorPicker4(
-					"##picker",
-					(float*)&color,
-					ImGuiColorEditFlags_PickerHueBar |
-					ImGuiColorEditFlags_NoInputs |
-					ImGuiColorEditFlags_NoSidePreview
-				);
+				ImGui::SetNextItemWidth(275.0f);
+
+				ImGui::ColorPicker4("##start_color_picker", (float*)&startColor, ImGuiColorEditFlags_PickerHueBar|ImGuiColorEditFlags_NoInputs|ImGuiColorEditFlags_NoSidePreview);
 
 				ImGui::PopStyleVar(2);
+
+				ImGui::Spacing();
+
+				if (ImGui::BeginTable("StartColorTable", 2, ImGuiTableFlags_SizingFixedFit))
+				{
+					ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+					ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+
+					float textOffsetY =
+						(ImGui::GetFrameHeight() - ImGui::GetTextLineHeight()) * 0.5f;
+
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + textOffsetY);
+					ImGui::Text("RGBA");
+
+					ImGui::TableSetColumnIndex(1);
+
+					ImGui::PushItemWidth(45.0f);
+
+					ImGui::DragFloat("##R", &startColor.x, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+					ImGui::DragFloat("##G", &startColor.y, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+					ImGui::DragFloat("##B", &startColor.z, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
+					ImGui::DragFloat("##A", &startColor.w, 0.01f, 0.0f, 1.0f);
+
+					ImGui::PopItemWidth();
+
+					float buttonOffsetY = (ImGui::GetFrameHeight() - 16.0f) * 0.5f;
+
+					ImGui::SameLine(0.0f, 10.0f);
+					ImGui::SetCursorPosY(ImGui::GetCursorPosY() + buttonOffsetY);
+
+					ImGui::ColorButton("##color_preview", ImVec4(startColor.x, startColor.y, startColor.z, startColor.w), ImGuiColorEditFlags_NoTooltip, ImVec2(16, 16));
+
+					ImGui::EndTable();
+				}
 			}
 			if (ImGui::CollapsingHeader("Emission"))
 			{
-
+				
 			}
 			if (ImGui::CollapsingHeader("Shape"))
 			{
@@ -492,7 +526,48 @@ namespace Loopie {
 			}
 			if (ImGui::CollapsingHeader("Render"))
 			{
-				//Select the image the particle system will use.
+				//ImGui::Image(emitter->particleTexture,ImVec2(64, 64));
+				ImGui::Spacing();
+				
+				if (ImGui::Button(" New Sprite "))
+				{
+					ImGui::OpenPopup("SpritePickerPopup");
+				}
+
+				if (ImGui::BeginPopup("SpritePickerPopup"))
+				{
+					namespace fs = std::filesystem;
+					const fs::path folder = "Assets/Particles/";
+
+					if (fs::exists(folder))
+					{
+						for (const auto& entry : fs::directory_iterator(folder))
+						{
+							if (!entry.is_regular_file())
+								continue;
+
+							const auto ext = entry.path().extension().string();
+							if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
+							{
+								const std::string filename = entry.path().filename().string();
+								if (ImGui::Selectable(filename.c_str()))
+								{
+									//Set the emitter->particleTexture to the new selected texture
+									/*selectedTexture = getTexureByUUID(entry.path().string()); ???
+									emitter->particleTexture = selectedTexture;*/
+									ImGui::CloseCurrentPopup();
+								}
+							}
+						}
+					}
+					else
+					{
+						ImGui::TextDisabled("Folder not found");
+					}
+
+					ImGui::EndPopup();
+				}
+
 			}
 			if (ImGui::CollapsingHeader("Bounding Box"))
 			{

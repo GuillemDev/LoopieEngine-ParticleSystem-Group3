@@ -1,9 +1,9 @@
 #pragma once
+#include "Loopie/Math/MathTypes.h"
 #include "Loopie/Components/Component.h"
 #include "Loopie/Scene/Entity.h"
 #include "Loopie/Events/Event.h"
 #include "Loopie/Events/EventTypes.h"
-
 #include <memory>
 
 namespace Loopie
@@ -34,6 +34,9 @@ namespace Loopie
         float m_speed = 1.0;
         float m_size = 1.0;
         bool m_looping = true;
+
+        // Starting Color
+        vec4 m_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 
         // Texture Animation
         bool m_isActive = true;
