@@ -1,29 +1,27 @@
 #pragma once
-#include "Loopie/Math/MathTypes.h"
-#include "Loopie/Components/Component.h"
-#include "Loopie/Scene/Entity.h"
-#include "Loopie/Events/Event.h"
-#include "Loopie/Events/EventTypes.h"
-#include <memory>
+#include "Loopie/Resources/Types/Texture.h"
+#include "Loopie/ParticleSystem/ParticleModule.h"
 
-namespace Loopie
+namespace Loopie 
 {
-    class ParticlesComponent : public Component
+    class Emitter
     {
     public:
-        DEFINE_TYPE(ParticlesComponent)
+        std::string name;
+        int spawnRate;       // particles per second
+        int maxParticles;
 
-        ParticlesComponent();
-        ~ParticlesComponent();
-        void Init()override;
+        std::vector<ParticleModule*> modules;
+        Texture* particleTexture;
 
-        void Update()override;
-        void Reset();
+    public:
+        Emitter();
+        ~Emitter() {}
 
-        JsonNode Serialize(JsonNode& parent) const override;
-        void Deserialize(const JsonNode& data) override;
+        void Save();
+        void Load();
 
-    private:
+        ParticleModule* AddParticleModule(ModuleType type);
 
     public:
         // General
@@ -68,9 +66,5 @@ namespace Loopie
         int m_rows = 1;
         int m_columns = 1;
         int m_cycles = 1;
-
-    private:
-        //std::vector<EmitterInstance> emitterInstances;
-        //ParticleSystem* resource;
     };
 }
