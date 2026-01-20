@@ -4,6 +4,7 @@
 #include "Loopie/Scene/Entity.h"
 #include "Loopie/Events/Event.h"
 #include "Loopie/Events/EventTypes.h"
+#include "Loopie/ParticleSystem/EmitterInstance.h"
 #include <memory>
 
 namespace Loopie
@@ -20,11 +21,15 @@ namespace Loopie
         void Update()override;
         void Reset();
 
+        // Serialize & Deserialize
         JsonNode Serialize(JsonNode& parent) const override;
         void Deserialize(const JsonNode& data) override;
 
     private:
+        std::vector<EmitterInstance> emitterInstances;
 
+
+        // PROVISIONAL - MUST IMPLEMENT EMITTERS IN UI INSPECTOR
     public:
         // General
         bool m_looping = true;
@@ -69,8 +74,6 @@ namespace Loopie
         int m_columns = 1;
         int m_cycles = 1;
 
-    private:
-        //std::vector<EmitterInstance> emitterInstances;
-        //ParticleSystem* resource;
+
     };
 }
