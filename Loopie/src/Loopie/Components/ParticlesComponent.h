@@ -27,7 +27,7 @@ namespace Loopie
         JsonNode Serialize(JsonNode& parent) const override;
         void Deserialize(const JsonNode& data) override;
 
-    private:
+    public:
         std::vector<EmitterInstance> emitterInstances;
 
         // PROVISIONAL - MUST IMPLEMENT EMITTERS IN UI INSPECTOR
