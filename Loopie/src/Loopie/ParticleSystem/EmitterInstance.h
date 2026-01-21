@@ -1,12 +1,15 @@
 #pragma once
 #include "Loopie/Math/MathTypes.h"
-#include "Loopie/Components/ParticlesComponent.h"
+
 #include <memory>
+#include <vector>
 
 namespace Loopie
 {
     class EmitterInstance
     {
+        class ParticlesComponent;
+
     public:
         EmitterInstance();
         ~EmitterInstance() {}
@@ -31,10 +34,10 @@ namespace Loopie
             int spriteIndex;
         };
 
-        ParticlesComponent* owner;
-
         std::vector<Particle> particles;
-        float spawnAccumulator;
+        float spawnAccumulator = 0.0f;
+
+        ParticlesComponent* owner = nullptr;
 
     public:
         // General

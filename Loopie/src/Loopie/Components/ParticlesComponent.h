@@ -5,7 +5,9 @@
 #include "Loopie/Events/Event.h"
 #include "Loopie/Events/EventTypes.h"
 #include "Loopie/ParticleSystem/EmitterInstance.h"
+
 #include <memory>
+#include <vector>
 
 namespace Loopie
 {
@@ -27,7 +29,6 @@ namespace Loopie
 
     private:
         std::vector<EmitterInstance> emitterInstances;
-
 
         // PROVISIONAL - MUST IMPLEMENT EMITTERS IN UI INSPECTOR
     public:
@@ -73,7 +74,6 @@ namespace Loopie
         int m_rows = 1;
         int m_columns = 1;
         int m_cycles = 1;
-
 
     };
 }
