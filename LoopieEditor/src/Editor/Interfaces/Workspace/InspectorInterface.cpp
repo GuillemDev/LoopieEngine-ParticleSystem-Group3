@@ -9,6 +9,7 @@
 #include "Loopie/Components/MeshRenderer.h"
 #include "Loopie/Components/ParticlesComponent.h"
 #include "Loopie/Resources/AssetRegistry.h"
+#include "Loopie/Resources/ResourceManager.h"
 
 #include <imgui.h>
 
@@ -705,13 +706,7 @@ namespace Loopie {
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
 
-			ImGui::ColorPicker4(
-				"##picker",
-				(float*)&colorOverTime,
-				ImGuiColorEditFlags_PickerHueBar |
-				ImGuiColorEditFlags_NoInputs |
-				ImGuiColorEditFlags_NoSidePreview
-			);
+			ImGui::ColorPicker4("##picker", (float*)&colorOverTime, ImGuiColorEditFlags_PickerHueBar | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoSidePreview);
 
 			ImGui::PopStyleVar(2);
 		}
@@ -761,53 +756,77 @@ namespace Loopie {
 		// --- Render ---
 		if (ImGui::CollapsingHeader("Render"))
 		{
-			/*if (texture exists)
-			{
-				ImGui::Spacing();
-				ImGui::Image(emitter->particleTexture,ImVec2(64, 64));
-			}*/
-		
 			ImGui::Spacing();
-			
-			if (ImGui::Button(" New Sprite "))
+
+			// Current particle texture preview
+			if (emitter.m_particleTexture)
 			{
-				ImGui::OpenPopup("SpritePickerPopup"); // --- Needs testing ---
+				ImTextureID textureID = (ImTextureID)(intptr_t)emitter.m_particleTexture->GetRendererId();
+				ImGui::Image(textureID, ImVec2(64, 64));
+				ImGui::Spacing();
 			}
 
-			if (ImGui::BeginPopup("SpritePickerPopup")) 
+			if (ImGui::Button("New Sprite"))
+				ImGui::OpenPopup("SpritePickerPopup");
+
+			ImGui::SetNextWindowSize(ImVec2(420, 300), ImGuiCond_Always);
+
+			if (ImGui::BeginPopup("SpritePickerPopup"))
 			{
-				namespace fs = std::filesystem;
-				const fs::path folder = "Assets/Particles/";
+				const Project& project = Application::GetInstance().m_activeProject;
+				std::filesystem::path assetsPath = project.GetAssetsPath();
 
-				if (fs::exists(folder))
+				ImGui::BeginChild("TexturePickerScroll", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+
+				constexpr float thumbnailSize = 48.0f;
+				constexpr float padding = 8.0f;
+				float cellSize = thumbnailSize + padding;
+
+				float availX = ImGui::GetContentRegionAvail().x;
+				int columnCount = std::max(1, (int)(availX / cellSize));
+				ImGui::Columns(columnCount, nullptr, false);
+
+				for (auto& entry : std::filesystem::recursive_directory_iterator(assetsPath, std::filesystem::directory_options::skip_permission_denied))
 				{
-					for (const auto& entry : fs::directory_iterator(folder))
+					if (!entry.is_regular_file()) continue;
+					if (MetadataRegistry::IsMetadataFile(entry.path())) continue;
+
+					std::string ext = entry.path().extension().string();
+					if (ext != ".png" && ext != ".jpg" && ext != ".jpeg") continue;
+
+					Metadata& meta = AssetRegistry::GetOrCreateMetadata(entry.path());
+					std::shared_ptr<Texture> texture = ResourceManager::GetTexture(meta);
+					if (!texture || texture->GetRendererId() == 0) continue;
+
+					ImGui::PushID(entry.path().string().c_str());
+
+					ImGui::Image((ImTextureID)(intptr_t)texture->GetRendererId(), ImVec2(thumbnailSize, thumbnailSize));
+
+					if (ImGui::IsItemClicked())
 					{
-						if (!entry.is_regular_file())
-							continue;
-
-						const auto ext = entry.path().extension().string();
-						if (ext == ".png" || ext == ".jpg" || ext == ".jpeg")
-						{
-							const std::string filename = entry.path().filename().string();
-							if (ImGui::Selectable(filename.c_str()))
-							{
-								//Set the emitter->particleTexture to the new selected texture
-								/*selectedTexture = getTexureByUUID(entry.path().string()); ???
-								emitter->particleTexture = selectedTexture;*/
-								ImGui::CloseCurrentPopup();
-							}
-						}
+						emitter.m_particleTexture = texture;
+						ImGui::CloseCurrentPopup();
 					}
+
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Text("%s", entry.path().stem().string().c_str());
+						ImGui::EndTooltip();
+					}
+
+					ImGui::NextColumn();
+					ImGui::PopID();
 				}
-				else
-				{
-					ImGui::TextDisabled("Folder not found");
-				}
+
+				ImGui::Columns(1);
+				ImGui::EndChild();
 				ImGui::EndPopup();
 			}
+
 			ImGui::Spacing();
 		}
+
 		if (ImGui::CollapsingHeader("Bounding Box"))
 		{
 

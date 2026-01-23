@@ -1,5 +1,6 @@
 #pragma once
 #include "Loopie/Math/MathTypes.h"
+#include "Loopie/Resources/Types/Texture.h"
 
 #include <memory>
 #include <vector>
@@ -38,6 +39,8 @@ namespace Loopie
         float spawnAccumulator = 0.0f;
 
         ParticlesComponent* owner = nullptr;
+
+        std::shared_ptr<Texture> m_particleTexture;
 
     public:
         // General
