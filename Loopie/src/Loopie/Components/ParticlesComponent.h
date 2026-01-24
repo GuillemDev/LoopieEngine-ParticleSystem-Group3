@@ -28,7 +28,7 @@ namespace Loopie
         void Deserialize(const JsonNode& data) override;
 
     public:
-        std::vector<EmitterInstance> emitterInstances;
+        std::vector<std::unique_ptr<EmitterInstance>> emitterInstances;
 
     };
 }

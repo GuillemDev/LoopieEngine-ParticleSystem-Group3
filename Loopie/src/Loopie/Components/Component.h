@@ -33,6 +33,7 @@ namespace Loopie {
 		// Setters
 		void SetIsActive(bool active);
 		void SetUUID(const std::string uuid);
+		void SetOwner(std::weak_ptr<Entity> owner) { m_owner = owner; }
 
 		// Serialize & Deserialize
 		virtual JsonNode Serialize(JsonNode& parent) const = 0;

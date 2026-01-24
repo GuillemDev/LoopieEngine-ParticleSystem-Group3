@@ -18,7 +18,7 @@ namespace Loopie
 	public:
 		TopBarInterface();
 		~TopBarInterface() = default;
-		void Init() override {}
+		void Init() override;
 		void Update(const InputEventManager& inputEvent) override;
 		void Render() override;
 

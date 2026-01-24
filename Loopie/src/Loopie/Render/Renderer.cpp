@@ -107,6 +107,21 @@ namespace Loopie {
 		glDrawElements(GL_TRIANGLES, vao->GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, nullptr);
 		vao->Unbind();
 	}
+	void Renderer::FlushRenderItem(std::shared_ptr<VertexArray> vao, std::shared_ptr<Material> material, const matrix4& modelMatrix, const vec4& color, int spriteIndex, int rows, int columns)
+	{
+		vao->Bind();
+		material->Bind();
+
+		SetRenderUniforms(material, modelMatrix);
+
+		material->GetShader().SetUniformVec4("u_Color", color);
+		material->GetShader().SetUniformInt("u_SpriteIndex", spriteIndex);
+		material->GetShader().SetUniformInt("u_Rows", rows);
+		material->GetShader().SetUniformInt("u_Columns", columns);
+
+		glDrawElements(GL_TRIANGLES, vao->GetIndexBuffer().GetCount(), GL_UNSIGNED_INT, nullptr);
+		vao->Unbind();
+	}
 
 	void Renderer::FlushRenderQueue()
 	{

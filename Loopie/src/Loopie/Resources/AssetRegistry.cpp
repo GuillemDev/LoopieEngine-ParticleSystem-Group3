@@ -64,12 +64,12 @@ namespace Loopie {
 					updated = true;
 				}
 			}
-			else if (metadata.Type == ResourceType::PARTICLE_SYSTEM || ParticleSystemImporter::CheckIfIsParticleSystem(pathString.c_str())) {
+			/*else if (metadata.Type == ResourceType::PARTICLE_SYSTEM || ParticleSystemImporter::CheckIfIsParticleSystem(pathString.c_str())) {
 				if (metadata.IsOutdated || metadata.CachesPath.size() == 0) {
 					ParticleSystemImporter::ImportParticleSystem(pathString, metadata);
 					updated = true;
 				}
-			}
+			}*/
 
 			///
 			if (updated) {
