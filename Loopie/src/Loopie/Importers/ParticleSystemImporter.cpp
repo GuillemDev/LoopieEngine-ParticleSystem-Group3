@@ -14,6 +14,13 @@
 namespace Loopie {
 
 	void ParticleSystemImporter::ImportParticleSystem(const std::string& filepath, Metadata& metadata) {
+		if (metadata.HasCache && !metadata.IsOutdated)
+			return;
+
+		JsonData jsonData = Json::ReadFromFile(filepath);
+		if (jsonData.IsEmpty())
+			return;
+
 
 		
 
