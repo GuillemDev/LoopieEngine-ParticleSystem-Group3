@@ -31,7 +31,16 @@ namespace Loopie
         m_stopIcon = ResourceManager::GetTexture(iconsToLoadMetadatas[2]);
         m_nextFrameIcon = ResourceManager::GetTexture(iconsToLoadMetadatas[3]);
     }
-
+    void Loopie::TopBarInterface::Init()
+    {
+        for (const auto& [uuid, entity] : Application::GetInstance().GetScene().GetAllEntities())
+        {
+            for (auto& component : entity->GetComponents())
+            {
+                component->Init();
+            }
+        }
+    }
     void TopBarInterface::Update(const InputEventManager& inputEvent)
     {
         if (m_actualMode == PAUSE || m_actualMode == DEACTIVATED)

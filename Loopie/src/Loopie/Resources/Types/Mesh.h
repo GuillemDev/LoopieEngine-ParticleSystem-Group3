@@ -50,6 +50,8 @@ namespace Loopie {
 		const MeshData& GetData() { return m_data; }
 		unsigned int GetMeshIndex() { return m_meshIndex; }
 		const std::shared_ptr<VertexArray> GetVAO() { return m_vao; }
+		void CreateVAO();
+
 	private:
 		MeshData m_data;
 

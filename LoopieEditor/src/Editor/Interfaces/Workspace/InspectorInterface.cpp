@@ -412,7 +412,12 @@ namespace Loopie {
 
 		if (ImGui::Button("+ Add Emitter"))
 		{
-			particlesComponent->emitterInstances.emplace_back();
+			auto emitter = std::make_unique<EmitterInstance>();
+
+			emitter->m_ownerParticleComponent = particlesComponent;
+			emitter->Init();
+
+			particlesComponent->emitterInstances.emplace_back(std::move(emitter));
 			selectedEmitter = (int)particlesComponent->emitterInstances.size() - 1;
 		}
 
@@ -425,9 +430,7 @@ namespace Loopie {
 				particlesComponent->emitterInstances.erase(particlesComponent->emitterInstances.begin() + selectedEmitter);
 
 				if (selectedEmitter >= (int)particlesComponent->emitterInstances.size())
-				{
 					selectedEmitter = (int)particlesComponent->emitterInstances.size() - 1;
-				}
 			}
 		}
 		else
@@ -445,7 +448,7 @@ namespace Loopie {
 		}
 
 		// Clamp index
-		selectedEmitter = std::clamp(selectedEmitter, 0, (int)particlesComponent->emitterInstances.size() - 1);
+		selectedEmitter = std::clamp(selectedEmitter,0,(int)particlesComponent->emitterInstances.size() - 1);
 
 		// Emitter selector
 		ImGui::SetNextItemWidth(200.0f);
@@ -465,7 +468,7 @@ namespace Loopie {
 
 		ImGui::Separator();
 
-		EmitterInstance& emitter = particlesComponent->emitterInstances[selectedEmitter];
+		EmitterInstance& emitter = *particlesComponent->emitterInstances[selectedEmitter];
 
 		ImGui::PushID(selectedEmitter);
 
@@ -804,7 +807,7 @@ namespace Loopie {
 
 					if (ImGui::IsItemClicked())
 					{
-						emitter.m_particleTexture = texture;
+						emitter.SetParticleTexture(texture);
 						ImGui::CloseCurrentPopup();
 					}
 

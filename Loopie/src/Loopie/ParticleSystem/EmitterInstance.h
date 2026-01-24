@@ -1,16 +1,20 @@
 #pragma once
 #include "Loopie/Math/MathTypes.h"
 #include "Loopie/Resources/Types/Texture.h"
+#include "Loopie/Render/Shader.h"
+#include "Loopie/Resources/Types/Material.h"
+#include "Loopie/Resources/Types/Mesh.h"
 
 #include <memory>
 #include <vector>
 
 namespace Loopie
 {
+    class ParticlesComponent;
+    class MeshRenderer;
+
     class EmitterInstance
     {
-        class ParticlesComponent;
-
     public:
         EmitterInstance();
         ~EmitterInstance() {}
@@ -20,6 +24,7 @@ namespace Loopie
         void DrawParticles();
 
         void SpawnParticle();
+        void SetParticleTexture(const std::shared_ptr<Texture>& texture);
 
     public:
         struct Particle
@@ -34,14 +39,21 @@ namespace Loopie
             int spriteIndex;
         };
 
-        std::vector<Particle> particles;
-        float spawnAccumulator = 0.0f;
+        std::vector<Particle> m_particles;
+        float m_spawnAccumulator = 0.0f;
 
-        ParticlesComponent* owner = nullptr;
+        ParticlesComponent* m_ownerParticleComponent = nullptr;
 
-        /*Shader m_shader = Shader("assets/shaders/DefaultShader.shader");
-        Material.setshader(m_shader)*/
+        Shader m_shader = Shader("assets/shaders/DeafultParticleShader.shader");
+        std::shared_ptr<Material> m_material;
         std::shared_ptr<Texture> m_particleTexture;
+        std::shared_ptr<Mesh> m_mesh;
+
+        MeshRenderer* m_particleRenderer = nullptr;
+
+        mutable AABB m_worldAABB = AABB();
+        mutable OBB m_worldOBB = OBB();
+        mutable bool m_boundingBoxesDirty = true;
 
     public:
         // General

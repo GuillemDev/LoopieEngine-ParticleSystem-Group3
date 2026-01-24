@@ -1,6 +1,5 @@
 #include "Component.h"
 
-
 #include "Loopie/Scene/Entity.h"
 #include "Loopie/Components/Transform.h"
 
