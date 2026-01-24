@@ -481,49 +481,49 @@ namespace Loopie {
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Looping");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##looping", &particlesComponent->m_looping);
+			ImGui::Checkbox("##looping", &emitter.m_looping);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Play On Awake");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Checkbox("##playOnAwake", &particlesComponent->m_playOnAwake);
+			ImGui::Checkbox("##playOnAwake", &emitter.m_playOnAwake);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Duration");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat("##duration", &particlesComponent->m_duration);
+			ImGui::DragFloat("##duration", &emitter.m_duration);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Lifetime");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat("##lifetime", &particlesComponent->m_lifeTime);
+			ImGui::DragFloat("##lifetime", &emitter.m_lifeTime);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Speed");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat("##speed", &particlesComponent->m_speed);
+			ImGui::DragFloat("##speed", &emitter.m_speed);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Size");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragFloat("##size", &particlesComponent->m_size);
+			ImGui::DragFloat("##size", &emitter.m_size);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Maximum Particles");
 			ImGui::TableSetColumnIndex(1);
-			ImGui::DragInt("##maxParticles", &particlesComponent->m_maxParticles);
+			ImGui::DragInt("##maxParticles", &emitter.m_maxParticles);
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
@@ -531,7 +531,7 @@ namespace Loopie {
 			ImGui::Text("Simulation Space");
 			ImGui::TableSetColumnIndex(1);
 
-			int currentSimulationSpace = (int)(particlesComponent->m_simulationSpace);
+			int currentSimulationSpace = (int)(emitter.m_simulationSpace);
 			const char* simulationSpaceOptions[] = { "World", "Local" };
 
 			if (ImGui::BeginCombo("##SimulationSpace", simulationSpaceOptions[currentSimulationSpace]))
@@ -542,7 +542,7 @@ namespace Loopie {
 					if (ImGui::Selectable(simulationSpaceOptions[simulationSpace], isSimulationSpaceSelected))
 					{
 						currentSimulationSpace = simulationSpace;
-						particlesComponent->m_simulationSpace = (ParticlesComponent::SimulationSpace)(simulationSpace);
+						emitter.m_simulationSpace = (EmitterInstance::SimulationSpace)(simulationSpace);
 					}
 					if (isSimulationSpaceSelected) { ImGui::SetItemDefaultFocus(); }
 				}
@@ -553,7 +553,7 @@ namespace Loopie {
 		// --- Start Color ---
 		if (ImGui::CollapsingHeader("Start Color"))
 		{
-			vec4& startingColor = particlesComponent->m_startingColor;
+			vec4& startingColor = emitter.m_startingColor;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6, 6));
@@ -614,7 +614,7 @@ namespace Loopie {
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Emission Rate");
 				ImGui::TableSetColumnIndex(1);
-				ImGui::DragFloat("##emissionRate", &particlesComponent->m_emissionRate, 1, 0, 100);
+				ImGui::DragFloat("##emissionRate", &emitter.m_emissionRate, 1, 0, 100);
 
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
@@ -643,7 +643,7 @@ namespace Loopie {
 				ImGui::Text("Shape");
 				ImGui::TableSetColumnIndex(1);
 
-				int currentShapeIndex = (int)(particlesComponent->m_shape);
+				int currentShapeIndex = (int)(emitter.m_shape);
 				const char* shapeOptions[] = { "Box", "Sphere" };
 
 				if (ImGui::BeginCombo("##ShapeOptions", shapeOptions[currentShapeIndex]))
@@ -654,13 +654,13 @@ namespace Loopie {
 						if (ImGui::Selectable(shapeOptions[shape], isShapeSelected))
 						{
 							currentShapeIndex = shape;
-							particlesComponent->m_shape = (ParticlesComponent::Shape)(shape);
+							emitter.m_shape = (EmitterInstance::Shape)(shape);
 						}
 						if (isShapeSelected) { ImGui::SetItemDefaultFocus(); }
 					}
 					ImGui::EndCombo();
 				}
-				if (currentShapeIndex == (int)ParticlesComponent::Shape::BOX)
+				if (currentShapeIndex == (int)EmitterInstance::Shape::BOX)
 				{
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
@@ -669,7 +669,7 @@ namespace Loopie {
 					ImGui::TableSetColumnIndex(1);
 					ImGui::PushItemWidth(45.0f);
 
-					vec3& squareSize = particlesComponent->m_sizeBox;
+					vec3& squareSize = emitter.m_sizeBox;
 					ImGui::Text("X"); ImGui::SameLine();
 					ImGui::DragFloat("##X", &squareSize.x, 0.01f, 0.0f, 1.0f); ImGui::SameLine();
 					ImGui::Text("Y"); ImGui::SameLine();
@@ -677,21 +677,21 @@ namespace Loopie {
 					ImGui::Text("Z"); ImGui::SameLine();
 					ImGui::DragFloat("##Z", &squareSize.z, 0.01f, 0.0f, 1.0f); 
 				}
-				else if (currentShapeIndex == (int)ParticlesComponent::Shape::SPHERE)
+				else if (currentShapeIndex == (int)EmitterInstance::Shape::SPHERE)
 				{
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ImGui::AlignTextToFramePadding();
 					ImGui::Text("Emit From Shell");
 					ImGui::TableSetColumnIndex(1);
-					ImGui::Checkbox("##emitFromShell", &particlesComponent->m_emitFromShell);
+					ImGui::Checkbox("##emitFromShell", &emitter.m_emitFromShell);
 
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ImGui::AlignTextToFramePadding();
 					ImGui::Text("Radius");
 					ImGui::TableSetColumnIndex(1);
-					ImGui::DragFloat("##radius", &particlesComponent->m_sphereRadius);
+					ImGui::DragFloat("##radius", &emitter.m_sphereRadius);
 				}
 				ImGui::EndTable();
 			}
@@ -724,7 +724,7 @@ namespace Loopie {
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Active");
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Checkbox("##active", &particlesComponent->m_isActive);
+				ImGui::Checkbox("##active", &emitter.m_isActive);
 
 				// Rows
 				ImGui::TableNextRow();
@@ -732,7 +732,7 @@ namespace Loopie {
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Rows");
 				ImGui::TableSetColumnIndex(1);
-				ImGui::InputInt("##rows", &particlesComponent->m_rows);
+				ImGui::InputInt("##rows", &emitter.m_rows);
 
 				// Columns
 				ImGui::TableNextRow();
@@ -740,7 +740,7 @@ namespace Loopie {
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Columns");
 				ImGui::TableSetColumnIndex(1);
-				ImGui::InputInt("##columns", &particlesComponent->m_columns);
+				ImGui::InputInt("##columns", &emitter.m_columns);
 
 				// Cycles
 				ImGui::TableNextRow();
@@ -748,7 +748,7 @@ namespace Loopie {
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Cycles");
 				ImGui::TableSetColumnIndex(1);
-				ImGui::InputInt("##cycles", &particlesComponent->m_cycles);
+				ImGui::InputInt("##cycles", &emitter.m_cycles);
 
 				ImGui::EndTable();
 			}

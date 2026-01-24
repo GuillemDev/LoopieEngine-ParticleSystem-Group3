@@ -17,7 +17,6 @@ namespace Loopie
 
         void Init();
         void Update(float dt);
-        void UpdateModules(float dt);
         void DrawParticles();
 
         void SpawnParticle();
