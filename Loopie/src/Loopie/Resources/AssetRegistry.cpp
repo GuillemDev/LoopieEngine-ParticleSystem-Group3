@@ -8,6 +8,7 @@
 #include "Loopie/Importers/TextureImporter.h"
 #include "Loopie/Importers/MeshImporter.h"
 #include "Loopie/Importers/MaterialImporter.h"
+#include "Loopie/Importers/ParticleSystemImporter.h"
 
 #include <filesystem>
 #include <unordered_set>
@@ -60,6 +61,12 @@ namespace Loopie {
 			else if (metadata.Type == ResourceType::MATERIAL || MaterialImporter::CheckIfIsMaterial(pathString.c_str())) {
 				if (metadata.IsOutdated || metadata.CachesPath.size() == 0) {
 					MaterialImporter::ImportMaterial(pathString, metadata);
+					updated = true;
+				}
+			}
+			else if (metadata.Type == ResourceType::PARTICLE_SYSTEM || ParticleSystemImporter::CheckIfIsParticleSystem(pathString.c_str())) {
+				if (metadata.IsOutdated || metadata.CachesPath.size() == 0) {
+					ParticleSystemImporter::ImportParticleSystem(pathString, metadata);
 					updated = true;
 				}
 			}
