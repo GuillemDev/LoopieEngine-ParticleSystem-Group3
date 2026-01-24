@@ -21,13 +21,40 @@ namespace Loopie {
 		if (jsonData.IsEmpty())
 			return;
 
+		metadata.Type = ResourceType::PARTICLE_SYSTEM;
 
-		
-
+		MetadataRegistry::SaveMetadata(filepath, metadata);
 	}
 
 	void ParticleSystemImporter::LoadParticleSystem(const std::string& path,ParticlesComponent& particleSystem)
 	{
-		
+		JsonData jsonData = Json::ReadFromFile(path);
+		if (jsonData.IsEmpty())
+			return;
+
+		particleSystem.Deserialize(jsonData.Child("particleSystem"));
+	}
+
+	void ParticleSystemImporter::SaveParticleSystem(const std::string& filepath, ParticlesComponent& particleSystem, Metadata& metadata)
+	{
+		JsonData jsonData = Json::ReadFromFile(filepath);
+		if (jsonData.IsEmpty())
+			return;
+
+		particleSystem.Serialize(jsonData.Node());
+	}
+
+	bool ParticleSystemImporter::CheckIfIsParticleSystem(const char* path)
+	{
+		std::string extension = std::filesystem::path(path).extension().string();
+		for (char& c : extension)
+		{
+			c = std::tolower(static_cast<unsigned char>(c));
+		}
+
+		if (!extension.empty() && extension[0] == '.')
+			extension = extension.substr(1);
+
+		return extension == "particle";
 	}
 }
