@@ -5,15 +5,35 @@ namespace Loopie
 	ParticlesComponent::ParticlesComponent() {
 
 	}
+
 	ParticlesComponent::~ParticlesComponent() {
 
 	}
-	void ParticlesComponent::Init() {
 
+	void ParticlesComponent::Init() 
+    {
+        for (EmitterInstance& emitter : emitterInstances)
+        {
+            emitter.Init();
+        }
 	}
-	void ParticlesComponent::Update() {
 
+	void ParticlesComponent::Update() 
+    {
+        for (EmitterInstance& emitter : emitterInstances)
+        {
+            emitter.Update();
+        }
 	}
+
+	void ParticlesComponent::Reset()
+    {
+        for (EmitterInstance& emitter : emitterInstances)
+        {
+            
+        }
+	}
+
     JsonNode ParticlesComponent::Serialize(JsonNode& parent) const
     {
         JsonNode particleSystem = parent.CreateObjectField("particleSystem");

@@ -6,138 +6,120 @@
 #include <cstdlib>
 #include <cmath>
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+#include "Loopie/Core/Time.h"
+
+//#ifndef M_PI
+//#define M_PI 3.14159265358979323846
+//#endif
 
 namespace Loopie {
 
     EmitterInstance::EmitterInstance()
     {
-        /*Init();*/
+        
     }
 
     void EmitterInstance::Init()
     {
-        /*particles.clear();
+        particles.clear();
         spawnAccumulator = 0.0f;
-        m_isActive = m_playOnAwake;*/
+        m_isActive = m_playOnAwake;
     }
 
     // Update particles and spawn new ones
-    void EmitterInstance::Update(float dt)
+    void EmitterInstance::Update()
     {
-        //if (!m_isActive)
-        //    return;
+        if (!m_isActive)
+            return;
 
-        //// Spawn new particles according to emission rate
-        //spawnAccumulator += dt * m_emissionRate;
-        //while (spawnAccumulator >= 1.0f)
-        //{
-        //    if (particles.size() < m_maxParticles)
-        //        SpawnParticle();
-        //    spawnAccumulator -= 1.0f;
-        //}
+        const float dt = static_cast<float>(Time::GetDeltaTime());
 
-        //// Update existing particles
-        //for (auto it = particles.begin(); it != particles.end();)
-        //{
-        //    it->age += dt;
-        //    if (it->age >= it->lifetime)
-        //    {
-        //        it = particles.erase(it);
-        //    }
-        //    else
-        //    {
-        //        // Move particle
-        //        it->position += it->velocity * dt;
+        spawnAccumulator += dt * m_emissionRate;
 
-        //        // Fade alpha
-        //        float lifeRatio = 1.0f - (it->age / it->lifetime);
-        //        it->color.a = m_startingColor.a * lifeRatio;
+        while (spawnAccumulator >= 1.0f)
+        {
+            if (particles.size() < m_maxParticles) { SpawnParticle(); }
 
-        //        // Animate sprite if using atlas
-        //        if (m_rows > 1 || m_columns > 1)
-        //        {
-        //            int totalFrames = m_rows * m_columns * m_cycles;
-        //            int frame = static_cast<int>((it->age / it->lifetime) * totalFrames);
-        //            it->spriteIndex = frame % (m_rows * m_columns);
-        //        }
+            spawnAccumulator -= 1.0f;
+        }
 
-        //        ++it;
-        //    }
-        //}
+        for (auto it = particles.begin(); it != particles.end();)
+        {
+            Particle& particle = *it;
 
-        //// Stop emitter if not looping and duration ended
-        //if (!m_looping)
-        //{
-        //    m_duration -= dt;
-        //    if (m_duration <= 0.0f)
-        //        m_isActive = false;
-        //}
+            particle.age += dt;
+
+            if (particle.age >= particle.lifetime)
+            {
+                it = particles.erase(it);
+                continue;
+            }
+
+            // Move
+            particle.position += particle.velocity * dt;
+
+            // Fade alpha
+            const float lifeRatio = 1.0f - (particle.age / particle.lifetime);
+            particle.color.a = m_startingColor.a * lifeRatio;
+
+            // Sprite animation
+            if (m_rows > 1 || m_columns > 1)
+            {
+                const int totalFrames = m_rows * m_columns * m_cycles;
+                const int frame = static_cast<int>((particle.age / particle.lifetime) * totalFrames);
+
+                particle.spriteIndex = frame % (m_rows * m_columns);
+            }
+
+            ++it;
+        }
+
+        if (!m_looping)
+        {
+            m_duration -= dt;
+            if (m_duration <= 0.0f)
+                m_isActive = false;
+        }
+
+        if (!m_looping)
+        {
+            m_duration -= Time::GetDeltaTime();
+            if (m_duration <= 0.0f)
+                m_isActive = false;
+        }
     }
 
     // Draw particles using the Renderer
     void EmitterInstance::DrawParticles()
     {
-    //    if (!m_particleTexture || !m_isActive)
-    //        return;
+        /*if (particles.empty())
+            return;
 
-    //    static std::shared_ptr<VertexArray> quadVAO = nullptr;
-    //    static std::shared_ptr<Material> particleMaterial = nullptr;
+        if (!owner)
+            return;
 
-    //    if (!quadVAO)
-    //    {
-    //        // Create a quad VAO for particle rendering
-    //        float vertices[] = {
-    //            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    //             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-    //             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-    //            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
-    //        };
-    //        unsigned int indices[] = { 0,1,2, 2,3,0 };
-    //        quadVAO = std::make_shared<VertexArray>();
-    //        quadVAO->SetVertexData(vertices, sizeof(vertices));
-    //        quadVAO->SetIndexData(indices, 6);
+        auto material = owner->GetParticleMaterial();
+        auto vao = owner->GetParticleVAO();
 
-    //        particleMaterial = std::make_shared<Material>();
-    //        particleMaterial->SetTexture("u_Texture", m_particleTexture);
-    //        particleMaterial->SetBlendMode(true);
-    //    }
+        material->Bind();
+        vao->Bind();
 
-    //    // Draw each particle
-    //    for (const auto& p : particles)
-    //    {
-    //        // Model matrix
-    //        matrix4 model = matrix4::Translation(p.position) *
-    //            matrix4::RotationZ(p.rotation) *
-    //            matrix4::Scale(vec3(p.size));
+        material->GetShader().SetUniformInt("u_SpriteRows", m_rows);
+        material->GetShader().SetUniformInt("u_SpriteColumns", m_columns);
 
-    //        // Apply emitter owner transform if local space
-    //        if (m_simulationSpace == SimulationSpace::LOCAL && owner)
-    //        {
-    //            const matrix4& ownerMat = owner->GetTransform()->GetLocalToWorldMatrix();
-    //            model = ownerMat * model;
-    //        }
+        for (const Particle& p : particles)
+        {
+            matrix4 model(1.0f);
+            model = translate(model, p.position);
+            model = scale(model, vec3(p.size));
 
-    //        // Particle color
-    //        particleMaterial->GetShader().SetUniformVec4("u_Color", p.color);
+            material->GetShader().SetUniformVec4("u_Color", p.color);
+            material->GetShader().SetUniformInt("u_SpriteIndex", p.spriteIndex);
 
-    //        // Sprite atlas UV
-    //        if (m_rows > 1 || m_columns > 1)
-    //        {
-    //            int row = p.spriteIndex / m_columns;
-    //            int col = p.spriteIndex % m_columns;
-    //            particleMaterial->GetShader().SetUniformVec2("u_UVOffset",
-    //                vec2(static_cast<float>(col) / m_columns, static_cast<float>(row) / m_rows));
-    //            particleMaterial->GetShader().SetUniformVec2("u_UVScale",
-    //                vec2(1.0f / m_columns, 1.0f / m_rows));
-    //        }
+            Renderer::FlushRenderItem(vao, material, model);
+        }
 
-    //        // Submit particle to renderer
-    //        Renderer::AddRenderItem(quadVAO, particleMaterial, nullptr);
-    //        Renderer::FlushRenderItem(quadVAO, particleMaterial, model);
-    //    }
+        vao->Unbind();*/
     }
 
     // Spawn a single particle

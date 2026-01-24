@@ -16,7 +16,7 @@ namespace Loopie
         ~EmitterInstance() {}
 
         void Init();
-        void Update(float dt);
+        void Update();
         void DrawParticles();
 
         void SpawnParticle();
@@ -39,6 +39,8 @@ namespace Loopie
 
         ParticlesComponent* owner = nullptr;
 
+        /*Shader m_shader = Shader("assets/shaders/DefaultShader.shader");
+        Material.setshader(m_shader)*/
         std::shared_ptr<Texture> m_particleTexture;
 
     public:
